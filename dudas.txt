@@ -1,0 +1,7 @@
+En el for, podria utilizar el sig formato?
+for -> ( -> assignment -> ; -> condition -> ; -> expression -> )
+
+En nuestro write o print se hace lo mismo?
+
+Se puede incluir mas de un parametro en write?
+
