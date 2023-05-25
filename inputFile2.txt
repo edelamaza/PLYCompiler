@@ -1,10 +1,8 @@
 program main { 
 	var i, x : int; 
 	var y, z : real; 
+	var a : string;
 	begin;
-	x:= -1e23;
-	y:= (1);
-	z := 4 + 5;
-	write("hello");
+	z := 5 * 4 / 23;
 	end;
 }

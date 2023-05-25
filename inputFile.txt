@@ -1,9 +1,11 @@
 program main{
 var i,n,f,x : int;
+var z : string;
 begin;
 write("texto dump");
 f := 1;
 x := 5;
+z := -z;
 if( x > f) then
 {
 	n := x + f;

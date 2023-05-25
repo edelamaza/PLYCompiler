@@ -2,13 +2,103 @@ import ply.yacc as yacc
 import ply.lex as lex
 from lexer import tokens
 
-# Grammar Rules
 # PIla operandos, pila opradores, pila tipos, pila saltos
-operators = []
-operands = []
-jumps = []
-types = []
-cuadruples = [operators, operands, types, jumps]
+
+currToken = ''
+prevToken = ''
+
+
+class Quadruple:
+    def __init__(self, operator, operand1, operand2, result):
+        self.operator = operator
+        self.operand1 = operand1
+        self.operand2 = operand2
+        self.result = result
+
+    def print(self):
+        print(self.operator, self.operand1, self.operand2, self.result)
+
+
+class QuadrupleManager:
+    def __init__(self):
+        self.operators = []
+        self.operands = []
+        self.types = []
+        self.jumps = []
+        self.quadruples = []
+        self.temp_count = 0
+
+    def generate_temp(self):
+        temp = f"t{self.temp_count}"
+        self.temp_count += 1
+        return temp
+
+    def add_quadruple(self, operator, operand1, operand2, result):
+        quadruple = Quadruple(operator, operand1, operand2, result)
+        self.quadruples.append(quadruple)
+
+    def push_operator(self, operator):
+        self.operators.append(operator)
+
+    def pop_operator(self):
+        if self.operators:
+            return self.operators.pop(0)
+        return None
+
+    def push_type(self, data_type):
+        self.types.append(data_type)
+
+    def pop_type(self):
+        if self.types:
+            return self.types.pop(0)
+        return None
+
+    def push_jump(self, jump):
+        self.jumps.append(jump)
+
+    def pop_jump(self):
+        if self.jumps:
+            return self.jumps.pop(0)
+        return None
+
+    def push_operand(self, operation):
+        self.operands.append(operation)
+
+    def pop_operand(self):
+        if self.operands:
+            return self.operands.pop(0)
+        return None
+
+    def print_stacks(self):
+        print("Operators:", self.operators)
+        print("Types:", self.types)
+        print("Jumps:", self.jumps)
+        print("Operands:", self.operands)
+        for quad in self.quadruples:
+            quad.print()
+
+    def generate_arithmetic(self):
+        # Check Types
+        type1 = self.pop_type()
+        type2 = self.pop_type()
+
+        if (type1 == type2 and len(self.operators) != 0):
+            operand2 = self.pop_operand()
+            operand1 = self.pop_operand()
+            operator = self.pop_operator()
+            print(operator)
+            result = self.generate_temp()
+            self.add_quadruple(operator, operand1, operand2, result)
+            self.push_operand(result)
+
+    def generate_assignment(self, identifier):
+        operator = self.pop_operator()
+        operand1 = self.pop_operand()
+        result = identifier
+        self.add_quadruple(operator, operand1, None, result)
+
+
+quadrupleMan = QuadrupleManager()
 
 # Variable Table
 varTable = {
@@ -17,19 +107,21 @@ varTable = {
 
 varTempArr = []
 
+# Grammar Rules
+
 
 def p_program(p):
     'program : PROGRAM IDENTIFIER LCURLYBRACE vars block RCURLYBRACE'
     p[0] = p[1]
 
 
-def p_vars(p):
+def p_vars(_):
     '''vars : VAR varsp COLON type seentype SEMICOLON
             | VAR varsp COLON type seentype SEMICOLON vars
             | empty '''
 
 
-def p_varsp(p):
+def p_varsp(_):
     '''varsp : IDENTIFIER seenid
             | IDENTIFIER seenid COMMA varsp'''
 
@@ -67,7 +159,7 @@ def p_type(p):
     p[0] = p[1]
 
 
-def p_block(p):
+def p_block(_):
     'block : BEGIN SEMICOLON statement END SEMICOLON'
 
 
@@ -84,7 +176,7 @@ def p_block(p):
 #                 | while statement
 #                 | write statement'''
 
-def p_statement(p):
+def p_statement(_):
     '''statement : empty
                 | assign
                 | assign statement
@@ -97,8 +189,8 @@ def p_statement(p):
 #     # queda pendiente el else if
 
 
-def p_assign(p):
-    'assign : IDENTIFIER ASSIGNOP expression assignnow SEMICOLON'
+def p_assign(_):
+    'assign : IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON'
 
 
 def p_assignnow(p):
@@ -106,12 +198,16 @@ def p_assignnow(p):
     # TODO
     # Handle errors where variables arent defined
     # Assing value into Variable Table
-    varTable[p[-3]][1] = p[-1]
+    # varTable[p[-3]][1] = p[-1]
+    # Push assign into operator stack
+    identifier = p[-4]
+    quadrupleMan.push_operator(':=')
+    quadrupleMan.generate_assignment(identifier)
     print(varTable)
 
 
 def p_expression(p):
-    '''expression : simpleexpression
+    '''expression : simpleexpression genquad
                     | simpleexpression LESS_THAN simpleexpression
                     | simpleexpression LESS_THAN_EQUALS simpleexpression
                     | simpleexpression GREATER_THAN simpleexpression
@@ -126,7 +222,7 @@ def p_expression(p):
 
 
 def p_simpleexpression(p):
-    '''simpleexpression : term
+    '''simpleexpression : term genquad
                         | term PLUS simpleexpression
                         | term MINUS simpleexpression
                         | term OR simpleexpression
@@ -134,15 +230,17 @@ def p_simpleexpression(p):
     if len(p) == 2:
         p[0] = p[1]
     elif p[2] == '+':
-        p[0] = float(p[1]) + float(p[3])
+        quadrupleMan.push_operator('+')
+        # p[0] = float(p[1]) + float(p[3])
     elif p[2] == '-':
-        p[0] = float(p[1]) - float(p[3])
+        quadrupleMan.push_operator('-')
+        # p[0] = float(p[1]) - float(p[3])
     # elif p[2] == 'or':
     #     p[0] = float(p[1]) / float(p[3])
 
 
 def p_term(p):
-    '''term : factor
+    '''term : factor genquad
             | factor DIV term
             | factor MULTIPLY term
             | factor DIVIDE term
@@ -154,19 +252,29 @@ def p_term(p):
     if len(p) == 2:
         p[0] = p[1]
     elif p[2] == 'DIV':
-        p[0] = float(p[1]) // float(p[3])
+        quadrupleMan.push_operator('//')
+        # p[0] = float(p[1]) // float(p[3])
     elif p[2] == '*':
-        p[0] = float(p[1]) * float(p[3])
+        quadrupleMan.push_operator('*')
+        # p[0] = float(p[1]) * float(p[3])
     elif p[2] == '/':
-        p[0] = float(p[1]) / float(p[3])
+        quadrupleMan.push_operator('/')
+        # p[0] = float(p[1]) / float(p[3])
     elif p[2] == 'MOD':
-        p[0] = float(p[1]) % float(p[3])
-    elif p[2] == '++':
-        p[0] = float(p[1]) + 1
-    elif p[2] == '--':
-        p[0] = float(p[1]) - 1
+        quadrupleMan.push_operator('%')
+        # p[0] = float(p[1]) % float(p[3])
+    # elif p[2] == '++':
+    #     quadrupleMan.push_operator('+')
+    #     p[0] = float(p[1]) + 1
+    # elif p[2] == '--':
+    #     p[0] = float(p[1]) - 1
     # elif p[2] == 'AND':
     #     p[0] = float(p[1]) % float(p[3])
+
+
+def p_genquad(_):
+    'genquad : '
+    quadrupleMan.generate_arithmetic()
 
 
 def p_factor(p):
@@ -188,12 +296,42 @@ def p_const(p):
             | STRING_CONST
     '''
     print('entro const')
+    print(prevToken.type)
     if len(p) == 2:
-        p[0] = p[1]
+        if (prevToken.type == 'IDENTIFIER'):
+            # Check VarTable to get Type
+            quadrupleMan.push_type(varTable[prevToken.value][0])
+            quadrupleMan.push_operand(varTable[prevToken.value][1])
+        elif prevToken.type == "NUMBER_CONST":
+            quadrupleMan.push_type(prevToken.type)
+            quadrupleMan.push_operand(float(p[1]))
+        else:
+            quadrupleMan.push_type(prevToken.type)
+            quadrupleMan.push_operand(str(p[1]))
+        # p[0] = p[1]
     elif p[1] == '-':
-        p[0] = -float(p[2])
+        if (prevToken.type == 'IDENTIFIER'):
+            # Check VarTable to get Type
+            quadrupleMan.push_type(varTable[prevToken.value][0])
+            quadrupleMan.push_operand(-varTable[prevToken.value][1])
+            # p[0] = -float(p[2])
+        elif prevToken.type == "NUMBER_CONST":
+            quadrupleMan.push_type(prevToken.type)
+            quadrupleMan.push_operand(-float(p[2]))
+            # p[0] = -float(p[2])
+        else:
+            # TODO
+            # Strings with negative sign
+            print('error string cannot be negative')
     else:
-        p[0] = p[2]
+        if (prevToken.type == 'IDENTIFIER'):
+            # Check VarTable to get Type
+            quadrupleMan.push_type(varTable[prevToken.value][0])
+            quadrupleMan.push_operand(-varTable[prevToken.value][1])
+        elif prevToken.type == "NUMBER_CONST":
+            quadrupleMan.push_type(prevToken.type)
+            quadrupleMan.push_operand(-float(p[2]))
+        # p[0] = float(p[2])
 
 
 def p_writefunction(p):
@@ -221,6 +359,8 @@ print(raw_input)
 class PA2Lexer(object):
     def token(self):
         global raw_input
+        global currToken
+        global prevToken
 
         if len(raw_input) == 0:
             return None
@@ -234,6 +374,8 @@ class PA2Lexer(object):
         return_token.type = token_type
         return_token.lexpos = 0
         print(return_token)
+        prevToken = currToken
+        currToken = return_token
         return return_token
 
 
@@ -244,4 +386,5 @@ parser = yacc.yacc()
 
 
 result = parser.parse(lexer=lexy)
-print(result)
+# print(result)
+quadrupleMan.print_stacks()
