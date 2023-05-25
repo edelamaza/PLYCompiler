@@ -3,5 +3,6 @@ program main {
 	var y, z : real; 
 	begin;
 	x:= 1;
+	write("hello");
 	end;
 }

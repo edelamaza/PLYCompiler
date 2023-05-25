@@ -87,7 +87,9 @@ def p_block(p):
 def p_statement(p):
     '''statement : empty
                 | assign
-                | assign statement'''
+                | assign statement
+                | writefunction
+                | writefunction statement'''
 
 # def p_condition(p):
 #     '''condition : IF LPAREN expression RPAREN THEN LCURLYBRACE statement RCURLYBRACE
@@ -96,7 +98,16 @@ def p_statement(p):
 
 
 def p_assign(p):
-    'assign : IDENTIFIER ASSIGNOP expression SEMICOLON'
+    'assign : IDENTIFIER ASSIGNOP expression assignnow SEMICOLON'
+
+
+def p_assignnow(p):
+    'assignnow : '
+    # TODO
+    # Handle errors where variables arent defined
+    # Assing value into Variable Table
+    varTable[p[-3]][1] = p[-1]
+    print(varTable)
 
 
 def p_expression(p):
@@ -109,11 +120,6 @@ def p_expression(p):
                     | simpleexpression EQUALS simpleexpression
                     '''
     p[0] = p[1]
-    # Assing value into Variable Table
-    # TODO
-    # Handle errors where variables arent defined
-    varTable[p[-2]][1] = p[0]
-    print(varTable)
 
 
 def p_simpleexpression(p):
@@ -151,8 +157,15 @@ def p_const(p):
             | PLUS NUMBER_CONST
             | MINUS NUMBER_CONST
             | NUMBER_CONST
+            | STRING_CONST
     '''
     p[0] = p[1]
+
+
+def p_writefunction(p):
+    '''writefunction : PRINT LPAREN expression RPAREN SEMICOLON
+                    | WRITE LPAREN expression RPAREN SEMICOLON'''
+    print(p[3])
 
 
 def p_empty(p):
