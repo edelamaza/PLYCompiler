@@ -119,7 +119,10 @@ def p_expression(p):
                     | simpleexpression NOT_EQUALS simpleexpression
                     | simpleexpression EQUALS simpleexpression
                     '''
+    # if len(p) == 2:
     p[0] = p[1]
+    # elif p[2] == '>':
+    #     p[0] = float(p[1]) > float(p[3])
 
 
 def p_simpleexpression(p):
@@ -128,7 +131,14 @@ def p_simpleexpression(p):
                         | term MINUS simpleexpression
                         | term OR simpleexpression
                         '''
-    p[0] = p[1]
+    if len(p) == 2:
+        p[0] = p[1]
+    elif p[2] == '+':
+        p[0] = float(p[1]) + float(p[3])
+    elif p[2] == '-':
+        p[0] = float(p[1]) - float(p[3])
+    # elif p[2] == 'or':
+    #     p[0] = float(p[1]) / float(p[3])
 
 
 def p_term(p):
@@ -141,13 +151,31 @@ def p_term(p):
             | factor PLUSPLUS
             | factor MINUSMINUS
     '''
-    p[0] = p[1]
+    if len(p) == 2:
+        p[0] = p[1]
+    elif p[2] == 'DIV':
+        p[0] = float(p[1]) // float(p[3])
+    elif p[2] == '*':
+        p[0] = float(p[1]) * float(p[3])
+    elif p[2] == '/':
+        p[0] = float(p[1]) / float(p[3])
+    elif p[2] == 'MOD':
+        p[0] = float(p[1]) % float(p[3])
+    elif p[2] == '++':
+        p[0] = float(p[1]) + 1
+    elif p[2] == '--':
+        p[0] = float(p[1]) - 1
+    # elif p[2] == 'AND':
+    #     p[0] = float(p[1]) % float(p[3])
 
 
 def p_factor(p):
     '''factor : const
                 | LPAREN expression RPAREN'''
-    p[0] = p[1]
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = p[2]
 
 
 def p_const(p):
@@ -159,7 +187,13 @@ def p_const(p):
             | NUMBER_CONST
             | STRING_CONST
     '''
-    p[0] = p[1]
+    print('entro const')
+    if len(p) == 2:
+        p[0] = p[1]
+    elif p[1] == '-':
+        p[0] = -float(p[2])
+    else:
+        p[0] = p[2]
 
 
 def p_writefunction(p):

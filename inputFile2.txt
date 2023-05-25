@@ -2,7 +2,9 @@ program main {
 	var i, x : int; 
 	var y, z : real; 
 	begin;
-	x:= 1;
+	x:= -1e23;
+	y:= (1);
+	z := 4 + 5;
 	write("hello");
 	end;
 }

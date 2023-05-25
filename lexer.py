@@ -94,8 +94,8 @@ t_COLON = r':'
 t_PERIOD = r'\.'
 t_LCURLYBRACE = r'\{'
 t_RCURLYBRACE = r'\}'
-t_PLUSPLUS = r'\++'
-t_MINUSMINUS = r'\--'
+t_PLUSPLUS = r'\+\+'
+t_MINUSMINUS = r'--'
 
 
 # Identifiers can start with a letter or underscore, followed by any number of letters, digits, or underscores.
