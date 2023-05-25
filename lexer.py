@@ -2,22 +2,44 @@ import ply.lex as lex
 
 # List of token names
 tokens = (
+    # Keywords
+    'PROGRAM',
+    'VAR',
+    'BEGIN',
+    'END',
     'IDENTIFIER',
+
+    # Types
     'STRING_CONST',
+    'BOOLEAN',
+    'INT',
+    'REAL',
+    'CHAR',
+    'NUMBER_CONST',
+
+    # Arithmetic Operators
     'PLUS',
     'MINUS',
     'MULTIPLY',
     'DIVIDE',
     'MOD',
+    'PLUSPLUS',
+    'MINUSMINUS',
+    'DIV',
+
+
+    # Logical Operators
     'AND',
     'OR',
-    'ASSIGN',
     'EQUALS',
     'NOT_EQUALS',
     'LESS_THAN',
     'LESS_THAN_EQUALS',
     'GREATER_THAN',
     'GREATER_THAN_EQUALS',
+    'ASSIGNOP',
+
+    # Syntax Elements
     'LPAREN',
     'RPAREN',
     'LBRACKET',
@@ -28,28 +50,25 @@ tokens = (
     'SEMICOLON',
     'COLON',
     'PERIOD',
-    'PROGRAM',
-    'VAR',
-    'BEGIN',
-    'END',
-    'IF',
-    'THEN',
-    'ELSE',
+
+    # Repeat Statements
+    'FOR',
     'WHILE',
     'DO',
-    'FOR',
-    'BOOLEAN',
-    'CHAR',
+
+    # Conditionals
+    'IF',
+    'ELSE',
+    'THEN',
     'STRING',
     'TRUE',
     'FALSE',
     'NOT',
-    'INT',
-    'REAL',
+
+    # Misc
     'WRITE',
     'PRINT',
-    'NUMBER_CONST',
-    'DIV'
+
 )
 
 
@@ -58,10 +77,7 @@ t_PLUS = r'\+'
 t_MINUS = r'-'
 t_MULTIPLY = r'\*'
 t_DIVIDE = r'/'
-t_MOD = r'MOD'
-t_AND = r'AND'
-t_OR = r'OR'
-t_ASSIGN = r':='
+t_ASSIGNOP = r':='
 t_EQUALS = r'='
 t_NOT_EQUALS = r'<>'
 t_LESS_THAN = r'<'
@@ -78,6 +94,9 @@ t_COLON = r':'
 t_PERIOD = r'\.'
 t_LCURLYBRACE = r'\{'
 t_RCURLYBRACE = r'\}'
+t_PLUSPLUS = r'\++'
+t_MINUSMINUS = r'\--'
+
 
 # Identifiers can start with a letter or underscore, followed by any number of letters, digits, or underscores.
 # They cannot start with a digit.
@@ -112,38 +131,28 @@ def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+
 # Ignore whitespace characters
 t_ignore = ' \t\r\n'
 
 # Build the lexer
 lexer = lex.lex()
 
-# Test it out
-data = '''
-program main{
-var i,n,f,x : int;
-begin;
-write("texto dump");
-f := 1;
-x := 5;
-if( x > f) then 
-{
-	n := x + f;
-}else{
-	n := x - 4;
-}
-write(n);
-	end;
-}
-
-'''
-
-# Give the lexer some input
-lexer.input(data)
+input_file_path = "inputFile2.txt"
+input_file = open(input_file_path, "r")
+file_contents = input_file.read()
+lexer.input(file_contents)
+# Define output file
+output_file_path = "lexerOut.txt"
+output_file = open(output_file_path, "w")
 
 # Tokenize
 while True:
     tok = lexer.token()
     if not tok:
         break  # No more input
-    print(tok)
+    output_file.write(str(tok.value) + ' ')
+    output_file.write(str(tok.lineno) + ' ')
+    output_file.write(str(tok.type) + ' ')
+
+output_file.close()

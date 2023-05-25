@@ -1,0 +1,7 @@
+program main { 
+	var i, x : int; 
+	var y, z : real; 
+	begin;
+	x:= 1;
+	end;
+}
