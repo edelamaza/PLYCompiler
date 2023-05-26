@@ -42,7 +42,7 @@ class QuadrupleManager:
 
     def pop_operator(self):
         if self.operators:
-            return self.operators.pop(0)
+            return self.operators.pop()
         return None
 
     def push_type(self, data_type):
@@ -50,7 +50,7 @@ class QuadrupleManager:
 
     def pop_type(self):
         if self.types:
-            return self.types.pop(0)
+            return self.types.pop()
         return None
 
     def push_jump(self, jump):
@@ -58,7 +58,7 @@ class QuadrupleManager:
 
     def pop_jump(self):
         if self.jumps:
-            return self.jumps.pop(0)
+            return self.jumps.pop()
         return None
 
     def push_operand(self, operation):
@@ -66,7 +66,7 @@ class QuadrupleManager:
 
     def pop_operand(self):
         if self.operands:
-            return self.operands.pop(0)
+            return self.operands.pop()
         return None
 
     def print_stacks(self):
@@ -90,12 +90,14 @@ class QuadrupleManager:
             result = self.generate_temp()
             self.add_quadruple(operator, operand1, operand2, result)
             self.push_operand(result)
+            self.push_type(type1)
 
     def generate_assignment(self, identifier):
         operator = self.pop_operator()
         operand1 = self.pop_operand()
         result = identifier
         self.add_quadruple(operator, operand1, None, result)
+        self.pop_type()
 
 
 quadrupleMan = QuadrupleManager()
@@ -190,7 +192,7 @@ def p_statement(_):
 
 
 def p_assign(_):
-    'assign : IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON'
+    'assign : IDENTIFIER ASSIGNOP expression assignnow SEMICOLON'
 
 
 def p_assignnow(p):
@@ -200,69 +202,64 @@ def p_assignnow(p):
     # Assing value into Variable Table
     # varTable[p[-3]][1] = p[-1]
     # Push assign into operator stack
-    identifier = p[-4]
+    identifier = p[-3]
     quadrupleMan.push_operator(':=')
     quadrupleMan.generate_assignment(identifier)
     print(varTable)
 
 
 def p_expression(p):
-    '''expression : simpleexpression genquad
-                    | simpleexpression LESS_THAN simpleexpression
-                    | simpleexpression LESS_THAN_EQUALS simpleexpression
-                    | simpleexpression GREATER_THAN simpleexpression
-                    | simpleexpression GREATER_THAN_EQUALS simpleexpression
-                    | simpleexpression NOT_EQUALS simpleexpression
-                    | simpleexpression EQUALS simpleexpression
+    '''expression : simpleexpression
+                | simpleexpression LESS_THAN seenoperator simpleexpression genquad
+                | simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad
+                | simpleexpression GREATER_THAN seenoperator simpleexpression genquad
+                | simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+                | simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
+                | simpleexpression EQUALS seenoperator simpleexpression genquad
                     '''
     # if len(p) == 2:
     p[0] = p[1]
+    # quadrupleMan.generate_arithmetic()
     # elif p[2] == '>':
     #     p[0] = float(p[1]) > float(p[3])
 
 
 def p_simpleexpression(p):
-    '''simpleexpression : term genquad
-                        | term PLUS simpleexpression
-                        | term MINUS simpleexpression
-                        | term OR simpleexpression
-                        '''
+    '''simpleexpression : term seenterm simpleexpressionp'''
     if len(p) == 2:
         p[0] = p[1]
     elif p[2] == '+':
         quadrupleMan.push_operator('+')
+        quadrupleMan.generate_arithmetic()
         # p[0] = float(p[1]) + float(p[3])
     elif p[2] == '-':
         quadrupleMan.push_operator('-')
+        quadrupleMan.generate_arithmetic()
+
         # p[0] = float(p[1]) - float(p[3])
     # elif p[2] == 'or':
     #     p[0] = float(p[1]) / float(p[3])
 
 
+def p_seenterm(p):
+    '''seenterm :  '''
+    # check operator
+    if quadrupleMan.operators and quadrupleMan.operators[-1] in ['+', '-', 'OR']:
+        # generate arithmetic
+        quadrupleMan.generate_arithmetic()
+
+
+def p_simpleexpressionp(p):
+    '''simpleexpressionp : empty
+                        | PLUS seenoperator simpleexpression
+                        | MINUS seenoperator simpleexpression
+                        | OR seenoperator simpleexpression'''
+
+
 def p_term(p):
-    '''term : factor genquad
-            | factor DIV term
-            | factor MULTIPLY term
-            | factor DIVIDE term
-            | factor MOD term
-            | factor AND term
-            | factor PLUSPLUS
-            | factor MINUSMINUS
-    '''
-    if len(p) == 2:
-        p[0] = p[1]
-    elif p[2] == 'DIV':
-        quadrupleMan.push_operator('//')
-        # p[0] = float(p[1]) // float(p[3])
-    elif p[2] == '*':
-        quadrupleMan.push_operator('*')
-        # p[0] = float(p[1]) * float(p[3])
-    elif p[2] == '/':
-        quadrupleMan.push_operator('/')
-        # p[0] = float(p[1]) / float(p[3])
-    elif p[2] == 'MOD':
-        quadrupleMan.push_operator('%')
-        # p[0] = float(p[1]) % float(p[3])
+    '''term : factor seenfactor termp'''
+
+    # p[0] = float(p[1]) % float(p[3])
     # elif p[2] == '++':
     #     quadrupleMan.push_operator('+')
     #     p[0] = float(p[1]) + 1
@@ -272,8 +269,32 @@ def p_term(p):
     #     p[0] = float(p[1]) % float(p[3])
 
 
+def p_termp(p):
+    '''termp : empty
+            | MULTIPLY seenoperator term
+            | DIV seenoperator term
+            | DIVIDE seenoperator term
+            | MOD seenoperator term
+            | AND seenoperator term '''
+
+
+def p_seenoperator(p):
+    '''seenoperator : '''
+    # push p[-1]
+    quadrupleMan.push_operator(p[-1])
+
+
+def p_seenfactor(p):
+    '''seenfactor :  '''
+    # check operator
+    if quadrupleMan.operators and quadrupleMan.operators[-1] in ['*', '/', 'DIV', 'MOD', 'AND']:
+        # generate arithmetic
+        quadrupleMan.generate_arithmetic()
+
+
 def p_genquad(_):
     'genquad : '
+    # print('entro genquad')
     quadrupleMan.generate_arithmetic()
 
 

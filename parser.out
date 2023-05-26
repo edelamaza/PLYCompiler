@@ -9,8 +9,10 @@ Unused terminals:
     FOR
     IF
     LBRACKET
+    MINUSMINUS
     NOT
     PERIOD
+    PLUSPLUS
     RBRACKET
     THEN
     TRUE
@@ -37,52 +39,55 @@ Rule 15    statement -> assign
 Rule 16    statement -> assign statement
 Rule 17    statement -> writefunction
 Rule 18    statement -> writefunction statement
-Rule 19    assign -> IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON
+Rule 19    assign -> IDENTIFIER ASSIGNOP expression assignnow SEMICOLON
 Rule 20    assignnow -> <empty>
-Rule 21    expression -> simpleexpression genquad
-Rule 22    expression -> simpleexpression LESS_THAN simpleexpression
-Rule 23    expression -> simpleexpression LESS_THAN_EQUALS simpleexpression
-Rule 24    expression -> simpleexpression GREATER_THAN simpleexpression
-Rule 25    expression -> simpleexpression GREATER_THAN_EQUALS simpleexpression
-Rule 26    expression -> simpleexpression NOT_EQUALS simpleexpression
-Rule 27    expression -> simpleexpression EQUALS simpleexpression
-Rule 28    simpleexpression -> term genquad
-Rule 29    simpleexpression -> term PLUS simpleexpression
-Rule 30    simpleexpression -> term MINUS simpleexpression
-Rule 31    simpleexpression -> term OR simpleexpression
-Rule 32    term -> factor genquad
-Rule 33    term -> factor DIV term
-Rule 34    term -> factor MULTIPLY term
-Rule 35    term -> factor DIVIDE term
-Rule 36    term -> factor MOD term
-Rule 37    term -> factor AND term
-Rule 38    term -> factor PLUSPLUS
-Rule 39    term -> factor MINUSMINUS
-Rule 40    genquad -> <empty>
-Rule 41    factor -> const
-Rule 42    factor -> LPAREN expression RPAREN
-Rule 43    const -> PLUS IDENTIFIER
-Rule 44    const -> MINUS IDENTIFIER
-Rule 45    const -> IDENTIFIER
-Rule 46    const -> PLUS NUMBER_CONST
-Rule 47    const -> MINUS NUMBER_CONST
-Rule 48    const -> NUMBER_CONST
-Rule 49    const -> STRING_CONST
-Rule 50    writefunction -> PRINT LPAREN expression RPAREN SEMICOLON
-Rule 51    writefunction -> WRITE LPAREN expression RPAREN SEMICOLON
-Rule 52    empty -> <empty>
+Rule 21    expression -> simpleexpression
+Rule 22    expression -> simpleexpression LESS_THAN seenoperator simpleexpression genquad
+Rule 23    expression -> simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad
+Rule 24    expression -> simpleexpression GREATER_THAN seenoperator simpleexpression genquad
+Rule 25    expression -> simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+Rule 26    expression -> simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
+Rule 27    expression -> simpleexpression EQUALS seenoperator simpleexpression genquad
+Rule 28    simpleexpression -> term seenterm simpleexpressionp
+Rule 29    seenterm -> <empty>
+Rule 30    simpleexpressionp -> empty
+Rule 31    simpleexpressionp -> PLUS seenoperator simpleexpression
+Rule 32    simpleexpressionp -> MINUS seenoperator simpleexpression
+Rule 33    simpleexpressionp -> OR seenoperator simpleexpression
+Rule 34    term -> factor seenfactor termp
+Rule 35    termp -> empty
+Rule 36    termp -> MULTIPLY seenoperator term
+Rule 37    termp -> DIV seenoperator term
+Rule 38    termp -> DIVIDE seenoperator term
+Rule 39    termp -> MOD seenoperator term
+Rule 40    termp -> AND seenoperator term
+Rule 41    seenoperator -> <empty>
+Rule 42    seenfactor -> <empty>
+Rule 43    genquad -> <empty>
+Rule 44    factor -> const
+Rule 45    factor -> LPAREN expression RPAREN
+Rule 46    const -> PLUS IDENTIFIER
+Rule 47    const -> MINUS IDENTIFIER
+Rule 48    const -> IDENTIFIER
+Rule 49    const -> PLUS NUMBER_CONST
+Rule 50    const -> MINUS NUMBER_CONST
+Rule 51    const -> NUMBER_CONST
+Rule 52    const -> STRING_CONST
+Rule 53    writefunction -> PRINT LPAREN expression RPAREN SEMICOLON
+Rule 54    writefunction -> WRITE LPAREN expression RPAREN SEMICOLON
+Rule 55    empty -> <empty>
 
 Terminals, with rules where they appear
 
-AND                  : 37
+AND                  : 40
 ASSIGNOP             : 19
 BEGIN                : 13
 BOOLEAN              : 12
 CHAR                 : 
 COLON                : 2 3
 COMMA                : 6
-DIV                  : 33
-DIVIDE               : 35
+DIV                  : 37
+DIVIDE               : 38
 DO                   : 
 ELSE                 : 
 END                  : 13
@@ -91,39 +96,39 @@ FALSE                :
 FOR                  : 
 GREATER_THAN         : 24
 GREATER_THAN_EQUALS  : 25
-IDENTIFIER           : 1 5 6 19 43 44 45
+IDENTIFIER           : 1 5 6 19 46 47 48
 IF                   : 
 INT                  : 9
 LBRACKET             : 
 LCURLYBRACE          : 1
 LESS_THAN            : 22
 LESS_THAN_EQUALS     : 23
-LPAREN               : 42 50 51
-MINUS                : 30 44 47
-MINUSMINUS           : 39
-MOD                  : 36
-MULTIPLY             : 34
+LPAREN               : 45 53 54
+MINUS                : 32 47 50
+MINUSMINUS           : 
+MOD                  : 39
+MULTIPLY             : 36
 NOT                  : 
 NOT_EQUALS           : 26
-NUMBER_CONST         : 46 47 48
-OR                   : 31
+NUMBER_CONST         : 49 50 51
+OR                   : 33
 PERIOD               : 
-PLUS                 : 29 43 46
-PLUSPLUS             : 38
-PRINT                : 50
+PLUS                 : 31 46 49
+PLUSPLUS             : 
+PRINT                : 53
 PROGRAM              : 1
 RBRACKET             : 
 RCURLYBRACE          : 1
 REAL                 : 10
-RPAREN               : 42 50 51
-SEMICOLON            : 2 3 13 13 19 50 51
+RPAREN               : 45 53 54
+SEMICOLON            : 2 3 13 13 19 53 54
 STRING               : 11
-STRING_CONST         : 49
+STRING_CONST         : 52
 THEN                 : 
 TRUE                 : 
 VAR                  : 2 3
 WHILE                : 
-WRITE                : 51
+WRITE                : 54
 error                : 
 
 Nonterminals, with rules where they appear
@@ -131,17 +136,22 @@ Nonterminals, with rules where they appear
 assign               : 15 16
 assignnow            : 19
 block                : 1
-const                : 41
-empty                : 4 14
-expression           : 19 42 50 51
-factor               : 32 33 34 35 36 37 38 39
-genquad              : 19 21 28 32
+const                : 44
+empty                : 4 14 30 35
+expression           : 19 45 53 54
+factor               : 34
+genquad              : 22 23 24 25 26 27
 program              : 0
+seenfactor           : 34
 seenid               : 5 6
+seenoperator         : 22 23 24 25 26 27 31 32 33 36 37 38 39 40
+seenterm             : 28
 seentype             : 2 3
-simpleexpression     : 21 22 22 23 23 24 24 25 25 26 26 27 27 29 30 31
+simpleexpression     : 21 22 22 23 23 24 24 25 25 26 26 27 27 31 32 33
+simpleexpressionp    : 28
 statement            : 13 16 18
-term                 : 28 29 30 31 33 34 35 36 37
+term                 : 28 36 37 38 39 40
+termp                : 34
 type                 : 2 3
 vars                 : 1 3
 varsp                : 2 3 6
@@ -184,10 +194,10 @@ state 4
     (2) vars -> . VAR varsp COLON type seentype SEMICOLON
     (3) vars -> . VAR varsp COLON type seentype SEMICOLON vars
     (4) vars -> . empty
-    (52) empty -> .
+    (55) empty -> .
 
     VAR             shift and go to state 6
-    BEGIN           reduce using rule 52 (empty -> .)
+    BEGIN           reduce using rule 55 (empty -> .)
 
     vars                           shift and go to state 5
     empty                          shift and go to state 7
@@ -267,12 +277,12 @@ state 13
     (16) statement -> . assign statement
     (17) statement -> . writefunction
     (18) statement -> . writefunction statement
-    (52) empty -> .
-    (19) assign -> . IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON
-    (50) writefunction -> . PRINT LPAREN expression RPAREN SEMICOLON
-    (51) writefunction -> . WRITE LPAREN expression RPAREN SEMICOLON
+    (55) empty -> .
+    (19) assign -> . IDENTIFIER ASSIGNOP expression assignnow SEMICOLON
+    (53) writefunction -> . PRINT LPAREN expression RPAREN SEMICOLON
+    (54) writefunction -> . WRITE LPAREN expression RPAREN SEMICOLON
 
-    END             reduce using rule 52 (empty -> .)
+    END             reduce using rule 55 (empty -> .)
     IDENTIFIER      shift and go to state 20
     PRINT           shift and go to state 21
     WRITE           shift and go to state 22
@@ -330,10 +340,10 @@ state 18
     (16) statement -> . assign statement
     (17) statement -> . writefunction
     (18) statement -> . writefunction statement
-    (52) empty -> .
-    (19) assign -> . IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON
-    (50) writefunction -> . PRINT LPAREN expression RPAREN SEMICOLON
-    (51) writefunction -> . WRITE LPAREN expression RPAREN SEMICOLON
+    (55) empty -> .
+    (19) assign -> . IDENTIFIER ASSIGNOP expression assignnow SEMICOLON
+    (53) writefunction -> . PRINT LPAREN expression RPAREN SEMICOLON
+    (54) writefunction -> . WRITE LPAREN expression RPAREN SEMICOLON
 
   ! reduce/reduce conflict for END resolved using rule 15 (statement -> assign .)
     END             reduce using rule 15 (statement -> assign .)
@@ -341,7 +351,7 @@ state 18
     PRINT           shift and go to state 21
     WRITE           shift and go to state 22
 
-  ! END             [ reduce using rule 52 (empty -> .) ]
+  ! END             [ reduce using rule 55 (empty -> .) ]
 
     assign                         shift and go to state 18
     statement                      shift and go to state 30
@@ -357,10 +367,10 @@ state 19
     (16) statement -> . assign statement
     (17) statement -> . writefunction
     (18) statement -> . writefunction statement
-    (52) empty -> .
-    (19) assign -> . IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON
-    (50) writefunction -> . PRINT LPAREN expression RPAREN SEMICOLON
-    (51) writefunction -> . WRITE LPAREN expression RPAREN SEMICOLON
+    (55) empty -> .
+    (19) assign -> . IDENTIFIER ASSIGNOP expression assignnow SEMICOLON
+    (53) writefunction -> . PRINT LPAREN expression RPAREN SEMICOLON
+    (54) writefunction -> . WRITE LPAREN expression RPAREN SEMICOLON
 
   ! reduce/reduce conflict for END resolved using rule 17 (statement -> writefunction .)
     END             reduce using rule 17 (statement -> writefunction .)
@@ -368,7 +378,7 @@ state 19
     PRINT           shift and go to state 21
     WRITE           shift and go to state 22
 
-  ! END             [ reduce using rule 52 (empty -> .) ]
+  ! END             [ reduce using rule 55 (empty -> .) ]
 
     writefunction                  shift and go to state 19
     statement                      shift and go to state 31
@@ -377,21 +387,21 @@ state 19
 
 state 20
 
-    (19) assign -> IDENTIFIER . ASSIGNOP expression genquad assignnow SEMICOLON
+    (19) assign -> IDENTIFIER . ASSIGNOP expression assignnow SEMICOLON
 
     ASSIGNOP        shift and go to state 32
 
 
 state 21
 
-    (50) writefunction -> PRINT . LPAREN expression RPAREN SEMICOLON
+    (53) writefunction -> PRINT . LPAREN expression RPAREN SEMICOLON
 
     LPAREN          shift and go to state 33
 
 
 state 22
 
-    (51) writefunction -> WRITE . LPAREN expression RPAREN SEMICOLON
+    (54) writefunction -> WRITE . LPAREN expression RPAREN SEMICOLON
 
     LPAREN          shift and go to state 34
 
@@ -467,39 +477,29 @@ state 31
 
 state 32
 
-    (19) assign -> IDENTIFIER ASSIGNOP . expression genquad assignnow SEMICOLON
-    (21) expression -> . simpleexpression genquad
-    (22) expression -> . simpleexpression LESS_THAN simpleexpression
-    (23) expression -> . simpleexpression LESS_THAN_EQUALS simpleexpression
-    (24) expression -> . simpleexpression GREATER_THAN simpleexpression
-    (25) expression -> . simpleexpression GREATER_THAN_EQUALS simpleexpression
-    (26) expression -> . simpleexpression NOT_EQUALS simpleexpression
-    (27) expression -> . simpleexpression EQUALS simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (19) assign -> IDENTIFIER ASSIGNOP . expression assignnow SEMICOLON
+    (21) expression -> . simpleexpression
+    (22) expression -> . simpleexpression LESS_THAN seenoperator simpleexpression genquad
+    (23) expression -> . simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad
+    (24) expression -> . simpleexpression GREATER_THAN seenoperator simpleexpression genquad
+    (25) expression -> . simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+    (26) expression -> . simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
+    (27) expression -> . simpleexpression EQUALS seenoperator simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
     IDENTIFIER      shift and go to state 38
     NUMBER_CONST    shift and go to state 47
     STRING_CONST    shift and go to state 48
@@ -507,44 +507,34 @@ state 32
     expression                     shift and go to state 39
     simpleexpression               shift and go to state 40
     term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
 
 state 33
 
-    (50) writefunction -> PRINT LPAREN . expression RPAREN SEMICOLON
-    (21) expression -> . simpleexpression genquad
-    (22) expression -> . simpleexpression LESS_THAN simpleexpression
-    (23) expression -> . simpleexpression LESS_THAN_EQUALS simpleexpression
-    (24) expression -> . simpleexpression GREATER_THAN simpleexpression
-    (25) expression -> . simpleexpression GREATER_THAN_EQUALS simpleexpression
-    (26) expression -> . simpleexpression NOT_EQUALS simpleexpression
-    (27) expression -> . simpleexpression EQUALS simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (53) writefunction -> PRINT LPAREN . expression RPAREN SEMICOLON
+    (21) expression -> . simpleexpression
+    (22) expression -> . simpleexpression LESS_THAN seenoperator simpleexpression genquad
+    (23) expression -> . simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad
+    (24) expression -> . simpleexpression GREATER_THAN seenoperator simpleexpression genquad
+    (25) expression -> . simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+    (26) expression -> . simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
+    (27) expression -> . simpleexpression EQUALS seenoperator simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
     IDENTIFIER      shift and go to state 38
     NUMBER_CONST    shift and go to state 47
     STRING_CONST    shift and go to state 48
@@ -552,44 +542,34 @@ state 33
     expression                     shift and go to state 49
     simpleexpression               shift and go to state 40
     term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
 
 state 34
 
-    (51) writefunction -> WRITE LPAREN . expression RPAREN SEMICOLON
-    (21) expression -> . simpleexpression genquad
-    (22) expression -> . simpleexpression LESS_THAN simpleexpression
-    (23) expression -> . simpleexpression LESS_THAN_EQUALS simpleexpression
-    (24) expression -> . simpleexpression GREATER_THAN simpleexpression
-    (25) expression -> . simpleexpression GREATER_THAN_EQUALS simpleexpression
-    (26) expression -> . simpleexpression NOT_EQUALS simpleexpression
-    (27) expression -> . simpleexpression EQUALS simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (54) writefunction -> WRITE LPAREN . expression RPAREN SEMICOLON
+    (21) expression -> . simpleexpression
+    (22) expression -> . simpleexpression LESS_THAN seenoperator simpleexpression genquad
+    (23) expression -> . simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad
+    (24) expression -> . simpleexpression GREATER_THAN seenoperator simpleexpression genquad
+    (25) expression -> . simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+    (26) expression -> . simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
+    (27) expression -> . simpleexpression EQUALS seenoperator simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
     IDENTIFIER      shift and go to state 38
     NUMBER_CONST    shift and go to state 47
     STRING_CONST    shift and go to state 48
@@ -597,8 +577,8 @@ state 34
     expression                     shift and go to state 50
     simpleexpression               shift and go to state 40
     term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
 
 state 35
 
@@ -624,261 +604,229 @@ state 37
 
 state 38
 
-    (45) const -> IDENTIFIER .
+    (48) const -> IDENTIFIER .
 
-    DIV             reduce using rule 45 (const -> IDENTIFIER .)
-    MULTIPLY        reduce using rule 45 (const -> IDENTIFIER .)
-    DIVIDE          reduce using rule 45 (const -> IDENTIFIER .)
-    MOD             reduce using rule 45 (const -> IDENTIFIER .)
-    AND             reduce using rule 45 (const -> IDENTIFIER .)
-    PLUSPLUS        reduce using rule 45 (const -> IDENTIFIER .)
-    MINUSMINUS      reduce using rule 45 (const -> IDENTIFIER .)
-    PLUS            reduce using rule 45 (const -> IDENTIFIER .)
-    MINUS           reduce using rule 45 (const -> IDENTIFIER .)
-    OR              reduce using rule 45 (const -> IDENTIFIER .)
-    LESS_THAN       reduce using rule 45 (const -> IDENTIFIER .)
-    LESS_THAN_EQUALS reduce using rule 45 (const -> IDENTIFIER .)
-    GREATER_THAN    reduce using rule 45 (const -> IDENTIFIER .)
-    GREATER_THAN_EQUALS reduce using rule 45 (const -> IDENTIFIER .)
-    NOT_EQUALS      reduce using rule 45 (const -> IDENTIFIER .)
-    EQUALS          reduce using rule 45 (const -> IDENTIFIER .)
-    SEMICOLON       reduce using rule 45 (const -> IDENTIFIER .)
-    RPAREN          reduce using rule 45 (const -> IDENTIFIER .)
+    MULTIPLY        reduce using rule 48 (const -> IDENTIFIER .)
+    DIV             reduce using rule 48 (const -> IDENTIFIER .)
+    DIVIDE          reduce using rule 48 (const -> IDENTIFIER .)
+    MOD             reduce using rule 48 (const -> IDENTIFIER .)
+    AND             reduce using rule 48 (const -> IDENTIFIER .)
+    PLUS            reduce using rule 48 (const -> IDENTIFIER .)
+    MINUS           reduce using rule 48 (const -> IDENTIFIER .)
+    OR              reduce using rule 48 (const -> IDENTIFIER .)
+    LESS_THAN       reduce using rule 48 (const -> IDENTIFIER .)
+    LESS_THAN_EQUALS reduce using rule 48 (const -> IDENTIFIER .)
+    GREATER_THAN    reduce using rule 48 (const -> IDENTIFIER .)
+    GREATER_THAN_EQUALS reduce using rule 48 (const -> IDENTIFIER .)
+    NOT_EQUALS      reduce using rule 48 (const -> IDENTIFIER .)
+    EQUALS          reduce using rule 48 (const -> IDENTIFIER .)
+    SEMICOLON       reduce using rule 48 (const -> IDENTIFIER .)
+    RPAREN          reduce using rule 48 (const -> IDENTIFIER .)
 
 
 state 39
 
-    (19) assign -> IDENTIFIER ASSIGNOP expression . genquad assignnow SEMICOLON
-    (40) genquad -> .
+    (19) assign -> IDENTIFIER ASSIGNOP expression . assignnow SEMICOLON
+    (20) assignnow -> .
 
-    SEMICOLON       reduce using rule 40 (genquad -> .)
+    SEMICOLON       reduce using rule 20 (assignnow -> .)
 
-    genquad                        shift and go to state 52
+    assignnow                      shift and go to state 52
 
 state 40
 
-    (21) expression -> simpleexpression . genquad
-    (22) expression -> simpleexpression . LESS_THAN simpleexpression
-    (23) expression -> simpleexpression . LESS_THAN_EQUALS simpleexpression
-    (24) expression -> simpleexpression . GREATER_THAN simpleexpression
-    (25) expression -> simpleexpression . GREATER_THAN_EQUALS simpleexpression
-    (26) expression -> simpleexpression . NOT_EQUALS simpleexpression
-    (27) expression -> simpleexpression . EQUALS simpleexpression
-    (40) genquad -> .
+    (21) expression -> simpleexpression .
+    (22) expression -> simpleexpression . LESS_THAN seenoperator simpleexpression genquad
+    (23) expression -> simpleexpression . LESS_THAN_EQUALS seenoperator simpleexpression genquad
+    (24) expression -> simpleexpression . GREATER_THAN seenoperator simpleexpression genquad
+    (25) expression -> simpleexpression . GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+    (26) expression -> simpleexpression . NOT_EQUALS seenoperator simpleexpression genquad
+    (27) expression -> simpleexpression . EQUALS seenoperator simpleexpression genquad
 
-    LESS_THAN       shift and go to state 54
-    LESS_THAN_EQUALS shift and go to state 55
-    GREATER_THAN    shift and go to state 56
-    GREATER_THAN_EQUALS shift and go to state 57
-    NOT_EQUALS      shift and go to state 58
-    EQUALS          shift and go to state 59
-    SEMICOLON       reduce using rule 40 (genquad -> .)
-    RPAREN          reduce using rule 40 (genquad -> .)
+    SEMICOLON       reduce using rule 21 (expression -> simpleexpression .)
+    RPAREN          reduce using rule 21 (expression -> simpleexpression .)
+    LESS_THAN       shift and go to state 53
+    LESS_THAN_EQUALS shift and go to state 54
+    GREATER_THAN    shift and go to state 55
+    GREATER_THAN_EQUALS shift and go to state 56
+    NOT_EQUALS      shift and go to state 57
+    EQUALS          shift and go to state 58
 
-    genquad                        shift and go to state 53
 
 state 41
 
-    (28) simpleexpression -> term . genquad
-    (29) simpleexpression -> term . PLUS simpleexpression
-    (30) simpleexpression -> term . MINUS simpleexpression
-    (31) simpleexpression -> term . OR simpleexpression
-    (40) genquad -> .
+    (28) simpleexpression -> term . seenterm simpleexpressionp
+    (29) seenterm -> .
 
-    PLUS            shift and go to state 61
-    MINUS           shift and go to state 62
-    OR              shift and go to state 63
-    LESS_THAN       reduce using rule 40 (genquad -> .)
-    LESS_THAN_EQUALS reduce using rule 40 (genquad -> .)
-    GREATER_THAN    reduce using rule 40 (genquad -> .)
-    GREATER_THAN_EQUALS reduce using rule 40 (genquad -> .)
-    NOT_EQUALS      reduce using rule 40 (genquad -> .)
-    EQUALS          reduce using rule 40 (genquad -> .)
-    SEMICOLON       reduce using rule 40 (genquad -> .)
-    RPAREN          reduce using rule 40 (genquad -> .)
+    PLUS            reduce using rule 29 (seenterm -> .)
+    MINUS           reduce using rule 29 (seenterm -> .)
+    OR              reduce using rule 29 (seenterm -> .)
+    LESS_THAN       reduce using rule 29 (seenterm -> .)
+    LESS_THAN_EQUALS reduce using rule 29 (seenterm -> .)
+    GREATER_THAN    reduce using rule 29 (seenterm -> .)
+    GREATER_THAN_EQUALS reduce using rule 29 (seenterm -> .)
+    NOT_EQUALS      reduce using rule 29 (seenterm -> .)
+    EQUALS          reduce using rule 29 (seenterm -> .)
+    SEMICOLON       reduce using rule 29 (seenterm -> .)
+    RPAREN          reduce using rule 29 (seenterm -> .)
 
-    genquad                        shift and go to state 60
+    seenterm                       shift and go to state 59
 
 state 42
 
-    (43) const -> PLUS . IDENTIFIER
-    (46) const -> PLUS . NUMBER_CONST
+    (34) term -> factor . seenfactor termp
+    (42) seenfactor -> .
+
+    MULTIPLY        reduce using rule 42 (seenfactor -> .)
+    DIV             reduce using rule 42 (seenfactor -> .)
+    DIVIDE          reduce using rule 42 (seenfactor -> .)
+    MOD             reduce using rule 42 (seenfactor -> .)
+    AND             reduce using rule 42 (seenfactor -> .)
+    PLUS            reduce using rule 42 (seenfactor -> .)
+    MINUS           reduce using rule 42 (seenfactor -> .)
+    OR              reduce using rule 42 (seenfactor -> .)
+    LESS_THAN       reduce using rule 42 (seenfactor -> .)
+    LESS_THAN_EQUALS reduce using rule 42 (seenfactor -> .)
+    GREATER_THAN    reduce using rule 42 (seenfactor -> .)
+    GREATER_THAN_EQUALS reduce using rule 42 (seenfactor -> .)
+    NOT_EQUALS      reduce using rule 42 (seenfactor -> .)
+    EQUALS          reduce using rule 42 (seenfactor -> .)
+    SEMICOLON       reduce using rule 42 (seenfactor -> .)
+    RPAREN          reduce using rule 42 (seenfactor -> .)
+
+    seenfactor                     shift and go to state 60
+
+state 43
+
+    (44) factor -> const .
+
+    MULTIPLY        reduce using rule 44 (factor -> const .)
+    DIV             reduce using rule 44 (factor -> const .)
+    DIVIDE          reduce using rule 44 (factor -> const .)
+    MOD             reduce using rule 44 (factor -> const .)
+    AND             reduce using rule 44 (factor -> const .)
+    PLUS            reduce using rule 44 (factor -> const .)
+    MINUS           reduce using rule 44 (factor -> const .)
+    OR              reduce using rule 44 (factor -> const .)
+    LESS_THAN       reduce using rule 44 (factor -> const .)
+    LESS_THAN_EQUALS reduce using rule 44 (factor -> const .)
+    GREATER_THAN    reduce using rule 44 (factor -> const .)
+    GREATER_THAN_EQUALS reduce using rule 44 (factor -> const .)
+    NOT_EQUALS      reduce using rule 44 (factor -> const .)
+    EQUALS          reduce using rule 44 (factor -> const .)
+    SEMICOLON       reduce using rule 44 (factor -> const .)
+    RPAREN          reduce using rule 44 (factor -> const .)
+
+
+state 44
+
+    (45) factor -> LPAREN . expression RPAREN
+    (21) expression -> . simpleexpression
+    (22) expression -> . simpleexpression LESS_THAN seenoperator simpleexpression genquad
+    (23) expression -> . simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad
+    (24) expression -> . simpleexpression GREATER_THAN seenoperator simpleexpression genquad
+    (25) expression -> . simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
+    (26) expression -> . simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
+    (27) expression -> . simpleexpression EQUALS seenoperator simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    expression                     shift and go to state 61
+    simpleexpression               shift and go to state 40
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 45
+
+    (46) const -> PLUS . IDENTIFIER
+    (49) const -> PLUS . NUMBER_CONST
+
+    IDENTIFIER      shift and go to state 62
+    NUMBER_CONST    shift and go to state 63
+
+
+state 46
+
+    (47) const -> MINUS . IDENTIFIER
+    (50) const -> MINUS . NUMBER_CONST
 
     IDENTIFIER      shift and go to state 64
     NUMBER_CONST    shift and go to state 65
 
 
-state 43
-
-    (44) const -> MINUS . IDENTIFIER
-    (47) const -> MINUS . NUMBER_CONST
-
-    IDENTIFIER      shift and go to state 66
-    NUMBER_CONST    shift and go to state 67
-
-
-state 44
-
-    (32) term -> factor . genquad
-    (33) term -> factor . DIV term
-    (34) term -> factor . MULTIPLY term
-    (35) term -> factor . DIVIDE term
-    (36) term -> factor . MOD term
-    (37) term -> factor . AND term
-    (38) term -> factor . PLUSPLUS
-    (39) term -> factor . MINUSMINUS
-    (40) genquad -> .
-
-    DIV             shift and go to state 69
-    MULTIPLY        shift and go to state 70
-    DIVIDE          shift and go to state 71
-    MOD             shift and go to state 72
-    AND             shift and go to state 73
-    PLUSPLUS        shift and go to state 74
-    MINUSMINUS      shift and go to state 75
-    PLUS            reduce using rule 40 (genquad -> .)
-    MINUS           reduce using rule 40 (genquad -> .)
-    OR              reduce using rule 40 (genquad -> .)
-    LESS_THAN       reduce using rule 40 (genquad -> .)
-    LESS_THAN_EQUALS reduce using rule 40 (genquad -> .)
-    GREATER_THAN    reduce using rule 40 (genquad -> .)
-    GREATER_THAN_EQUALS reduce using rule 40 (genquad -> .)
-    NOT_EQUALS      reduce using rule 40 (genquad -> .)
-    EQUALS          reduce using rule 40 (genquad -> .)
-    SEMICOLON       reduce using rule 40 (genquad -> .)
-    RPAREN          reduce using rule 40 (genquad -> .)
-
-    genquad                        shift and go to state 68
-
-state 45
-
-    (41) factor -> const .
-
-    DIV             reduce using rule 41 (factor -> const .)
-    MULTIPLY        reduce using rule 41 (factor -> const .)
-    DIVIDE          reduce using rule 41 (factor -> const .)
-    MOD             reduce using rule 41 (factor -> const .)
-    AND             reduce using rule 41 (factor -> const .)
-    PLUSPLUS        reduce using rule 41 (factor -> const .)
-    MINUSMINUS      reduce using rule 41 (factor -> const .)
-    PLUS            reduce using rule 41 (factor -> const .)
-    MINUS           reduce using rule 41 (factor -> const .)
-    OR              reduce using rule 41 (factor -> const .)
-    LESS_THAN       reduce using rule 41 (factor -> const .)
-    LESS_THAN_EQUALS reduce using rule 41 (factor -> const .)
-    GREATER_THAN    reduce using rule 41 (factor -> const .)
-    GREATER_THAN_EQUALS reduce using rule 41 (factor -> const .)
-    NOT_EQUALS      reduce using rule 41 (factor -> const .)
-    EQUALS          reduce using rule 41 (factor -> const .)
-    SEMICOLON       reduce using rule 41 (factor -> const .)
-    RPAREN          reduce using rule 41 (factor -> const .)
-
-
-state 46
-
-    (42) factor -> LPAREN . expression RPAREN
-    (21) expression -> . simpleexpression genquad
-    (22) expression -> . simpleexpression LESS_THAN simpleexpression
-    (23) expression -> . simpleexpression LESS_THAN_EQUALS simpleexpression
-    (24) expression -> . simpleexpression GREATER_THAN simpleexpression
-    (25) expression -> . simpleexpression GREATER_THAN_EQUALS simpleexpression
-    (26) expression -> . simpleexpression NOT_EQUALS simpleexpression
-    (27) expression -> . simpleexpression EQUALS simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
-
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
-
-    expression                     shift and go to state 76
-    simpleexpression               shift and go to state 40
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
-
 state 47
 
-    (48) const -> NUMBER_CONST .
+    (51) const -> NUMBER_CONST .
 
-    DIV             reduce using rule 48 (const -> NUMBER_CONST .)
-    MULTIPLY        reduce using rule 48 (const -> NUMBER_CONST .)
-    DIVIDE          reduce using rule 48 (const -> NUMBER_CONST .)
-    MOD             reduce using rule 48 (const -> NUMBER_CONST .)
-    AND             reduce using rule 48 (const -> NUMBER_CONST .)
-    PLUSPLUS        reduce using rule 48 (const -> NUMBER_CONST .)
-    MINUSMINUS      reduce using rule 48 (const -> NUMBER_CONST .)
-    PLUS            reduce using rule 48 (const -> NUMBER_CONST .)
-    MINUS           reduce using rule 48 (const -> NUMBER_CONST .)
-    OR              reduce using rule 48 (const -> NUMBER_CONST .)
-    LESS_THAN       reduce using rule 48 (const -> NUMBER_CONST .)
-    LESS_THAN_EQUALS reduce using rule 48 (const -> NUMBER_CONST .)
-    GREATER_THAN    reduce using rule 48 (const -> NUMBER_CONST .)
-    GREATER_THAN_EQUALS reduce using rule 48 (const -> NUMBER_CONST .)
-    NOT_EQUALS      reduce using rule 48 (const -> NUMBER_CONST .)
-    EQUALS          reduce using rule 48 (const -> NUMBER_CONST .)
-    SEMICOLON       reduce using rule 48 (const -> NUMBER_CONST .)
-    RPAREN          reduce using rule 48 (const -> NUMBER_CONST .)
+    MULTIPLY        reduce using rule 51 (const -> NUMBER_CONST .)
+    DIV             reduce using rule 51 (const -> NUMBER_CONST .)
+    DIVIDE          reduce using rule 51 (const -> NUMBER_CONST .)
+    MOD             reduce using rule 51 (const -> NUMBER_CONST .)
+    AND             reduce using rule 51 (const -> NUMBER_CONST .)
+    PLUS            reduce using rule 51 (const -> NUMBER_CONST .)
+    MINUS           reduce using rule 51 (const -> NUMBER_CONST .)
+    OR              reduce using rule 51 (const -> NUMBER_CONST .)
+    LESS_THAN       reduce using rule 51 (const -> NUMBER_CONST .)
+    LESS_THAN_EQUALS reduce using rule 51 (const -> NUMBER_CONST .)
+    GREATER_THAN    reduce using rule 51 (const -> NUMBER_CONST .)
+    GREATER_THAN_EQUALS reduce using rule 51 (const -> NUMBER_CONST .)
+    NOT_EQUALS      reduce using rule 51 (const -> NUMBER_CONST .)
+    EQUALS          reduce using rule 51 (const -> NUMBER_CONST .)
+    SEMICOLON       reduce using rule 51 (const -> NUMBER_CONST .)
+    RPAREN          reduce using rule 51 (const -> NUMBER_CONST .)
 
 
 state 48
 
-    (49) const -> STRING_CONST .
+    (52) const -> STRING_CONST .
 
-    DIV             reduce using rule 49 (const -> STRING_CONST .)
-    MULTIPLY        reduce using rule 49 (const -> STRING_CONST .)
-    DIVIDE          reduce using rule 49 (const -> STRING_CONST .)
-    MOD             reduce using rule 49 (const -> STRING_CONST .)
-    AND             reduce using rule 49 (const -> STRING_CONST .)
-    PLUSPLUS        reduce using rule 49 (const -> STRING_CONST .)
-    MINUSMINUS      reduce using rule 49 (const -> STRING_CONST .)
-    PLUS            reduce using rule 49 (const -> STRING_CONST .)
-    MINUS           reduce using rule 49 (const -> STRING_CONST .)
-    OR              reduce using rule 49 (const -> STRING_CONST .)
-    LESS_THAN       reduce using rule 49 (const -> STRING_CONST .)
-    LESS_THAN_EQUALS reduce using rule 49 (const -> STRING_CONST .)
-    GREATER_THAN    reduce using rule 49 (const -> STRING_CONST .)
-    GREATER_THAN_EQUALS reduce using rule 49 (const -> STRING_CONST .)
-    NOT_EQUALS      reduce using rule 49 (const -> STRING_CONST .)
-    EQUALS          reduce using rule 49 (const -> STRING_CONST .)
-    SEMICOLON       reduce using rule 49 (const -> STRING_CONST .)
-    RPAREN          reduce using rule 49 (const -> STRING_CONST .)
+    MULTIPLY        reduce using rule 52 (const -> STRING_CONST .)
+    DIV             reduce using rule 52 (const -> STRING_CONST .)
+    DIVIDE          reduce using rule 52 (const -> STRING_CONST .)
+    MOD             reduce using rule 52 (const -> STRING_CONST .)
+    AND             reduce using rule 52 (const -> STRING_CONST .)
+    PLUS            reduce using rule 52 (const -> STRING_CONST .)
+    MINUS           reduce using rule 52 (const -> STRING_CONST .)
+    OR              reduce using rule 52 (const -> STRING_CONST .)
+    LESS_THAN       reduce using rule 52 (const -> STRING_CONST .)
+    LESS_THAN_EQUALS reduce using rule 52 (const -> STRING_CONST .)
+    GREATER_THAN    reduce using rule 52 (const -> STRING_CONST .)
+    GREATER_THAN_EQUALS reduce using rule 52 (const -> STRING_CONST .)
+    NOT_EQUALS      reduce using rule 52 (const -> STRING_CONST .)
+    EQUALS          reduce using rule 52 (const -> STRING_CONST .)
+    SEMICOLON       reduce using rule 52 (const -> STRING_CONST .)
+    RPAREN          reduce using rule 52 (const -> STRING_CONST .)
 
 
 state 49
 
-    (50) writefunction -> PRINT LPAREN expression . RPAREN SEMICOLON
+    (53) writefunction -> PRINT LPAREN expression . RPAREN SEMICOLON
 
-    RPAREN          shift and go to state 77
+    RPAREN          shift and go to state 66
 
 
 state 50
 
-    (51) writefunction -> WRITE LPAREN expression . RPAREN SEMICOLON
+    (54) writefunction -> WRITE LPAREN expression . RPAREN SEMICOLON
 
-    RPAREN          shift and go to state 78
+    RPAREN          shift and go to state 67
 
 
 state 51
@@ -888,950 +836,1106 @@ state 51
     (2) vars -> . VAR varsp COLON type seentype SEMICOLON
     (3) vars -> . VAR varsp COLON type seentype SEMICOLON vars
     (4) vars -> . empty
-    (52) empty -> .
+    (55) empty -> .
 
   ! reduce/reduce conflict for BEGIN resolved using rule 2 (vars -> VAR varsp COLON type seentype SEMICOLON .)
     BEGIN           reduce using rule 2 (vars -> VAR varsp COLON type seentype SEMICOLON .)
     VAR             shift and go to state 6
 
-  ! BEGIN           [ reduce using rule 52 (empty -> .) ]
+  ! BEGIN           [ reduce using rule 55 (empty -> .) ]
 
-    vars                           shift and go to state 79
+    vars                           shift and go to state 68
     empty                          shift and go to state 7
 
 state 52
 
-    (19) assign -> IDENTIFIER ASSIGNOP expression genquad . assignnow SEMICOLON
-    (20) assignnow -> .
+    (19) assign -> IDENTIFIER ASSIGNOP expression assignnow . SEMICOLON
 
-    SEMICOLON       reduce using rule 20 (assignnow -> .)
+    SEMICOLON       shift and go to state 69
 
-    assignnow                      shift and go to state 80
 
 state 53
 
-    (21) expression -> simpleexpression genquad .
+    (22) expression -> simpleexpression LESS_THAN . seenoperator simpleexpression genquad
+    (41) seenoperator -> .
 
-    SEMICOLON       reduce using rule 21 (expression -> simpleexpression genquad .)
-    RPAREN          reduce using rule 21 (expression -> simpleexpression genquad .)
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 70
 
 state 54
 
-    (22) expression -> simpleexpression LESS_THAN . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (23) expression -> simpleexpression LESS_THAN_EQUALS . seenoperator simpleexpression genquad
+    (41) seenoperator -> .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
-    simpleexpression               shift and go to state 81
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    seenoperator                   shift and go to state 71
 
 state 55
 
-    (23) expression -> simpleexpression LESS_THAN_EQUALS . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (24) expression -> simpleexpression GREATER_THAN . seenoperator simpleexpression genquad
+    (41) seenoperator -> .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
-    simpleexpression               shift and go to state 82
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    seenoperator                   shift and go to state 72
 
 state 56
 
-    (24) expression -> simpleexpression GREATER_THAN . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (25) expression -> simpleexpression GREATER_THAN_EQUALS . seenoperator simpleexpression genquad
+    (41) seenoperator -> .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
-    simpleexpression               shift and go to state 83
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    seenoperator                   shift and go to state 73
 
 state 57
 
-    (25) expression -> simpleexpression GREATER_THAN_EQUALS . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (26) expression -> simpleexpression NOT_EQUALS . seenoperator simpleexpression genquad
+    (41) seenoperator -> .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
-    simpleexpression               shift and go to state 84
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    seenoperator                   shift and go to state 74
 
 state 58
 
-    (26) expression -> simpleexpression NOT_EQUALS . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (27) expression -> simpleexpression EQUALS . seenoperator simpleexpression genquad
+    (41) seenoperator -> .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
-    simpleexpression               shift and go to state 85
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    seenoperator                   shift and go to state 75
 
 state 59
 
-    (27) expression -> simpleexpression EQUALS . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (28) simpleexpression -> term seenterm . simpleexpressionp
+    (30) simpleexpressionp -> . empty
+    (31) simpleexpressionp -> . PLUS seenoperator simpleexpression
+    (32) simpleexpressionp -> . MINUS seenoperator simpleexpression
+    (33) simpleexpressionp -> . OR seenoperator simpleexpression
+    (55) empty -> .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    PLUS            shift and go to state 78
+    MINUS           shift and go to state 79
+    OR              shift and go to state 80
+    LESS_THAN       reduce using rule 55 (empty -> .)
+    LESS_THAN_EQUALS reduce using rule 55 (empty -> .)
+    GREATER_THAN    reduce using rule 55 (empty -> .)
+    GREATER_THAN_EQUALS reduce using rule 55 (empty -> .)
+    NOT_EQUALS      reduce using rule 55 (empty -> .)
+    EQUALS          reduce using rule 55 (empty -> .)
+    SEMICOLON       reduce using rule 55 (empty -> .)
+    RPAREN          reduce using rule 55 (empty -> .)
 
-    simpleexpression               shift and go to state 86
-    term                           shift and go to state 41
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
+    simpleexpressionp              shift and go to state 76
+    empty                          shift and go to state 77
 
 state 60
 
-    (28) simpleexpression -> term genquad .
+    (34) term -> factor seenfactor . termp
+    (35) termp -> . empty
+    (36) termp -> . MULTIPLY seenoperator term
+    (37) termp -> . DIV seenoperator term
+    (38) termp -> . DIVIDE seenoperator term
+    (39) termp -> . MOD seenoperator term
+    (40) termp -> . AND seenoperator term
+    (55) empty -> .
 
-    LESS_THAN       reduce using rule 28 (simpleexpression -> term genquad .)
-    LESS_THAN_EQUALS reduce using rule 28 (simpleexpression -> term genquad .)
-    GREATER_THAN    reduce using rule 28 (simpleexpression -> term genquad .)
-    GREATER_THAN_EQUALS reduce using rule 28 (simpleexpression -> term genquad .)
-    NOT_EQUALS      reduce using rule 28 (simpleexpression -> term genquad .)
-    EQUALS          reduce using rule 28 (simpleexpression -> term genquad .)
-    SEMICOLON       reduce using rule 28 (simpleexpression -> term genquad .)
-    RPAREN          reduce using rule 28 (simpleexpression -> term genquad .)
+    MULTIPLY        shift and go to state 83
+    DIV             shift and go to state 84
+    DIVIDE          shift and go to state 85
+    MOD             shift and go to state 86
+    AND             shift and go to state 87
+    PLUS            reduce using rule 55 (empty -> .)
+    MINUS           reduce using rule 55 (empty -> .)
+    OR              reduce using rule 55 (empty -> .)
+    LESS_THAN       reduce using rule 55 (empty -> .)
+    LESS_THAN_EQUALS reduce using rule 55 (empty -> .)
+    GREATER_THAN    reduce using rule 55 (empty -> .)
+    GREATER_THAN_EQUALS reduce using rule 55 (empty -> .)
+    NOT_EQUALS      reduce using rule 55 (empty -> .)
+    EQUALS          reduce using rule 55 (empty -> .)
+    SEMICOLON       reduce using rule 55 (empty -> .)
+    RPAREN          reduce using rule 55 (empty -> .)
 
+    termp                          shift and go to state 81
+    empty                          shift and go to state 82
 
 state 61
 
-    (29) simpleexpression -> term PLUS . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (45) factor -> LPAREN expression . RPAREN
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    RPAREN          shift and go to state 88
 
-    term                           shift and go to state 41
-    simpleexpression               shift and go to state 87
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
 
 state 62
 
-    (30) simpleexpression -> term MINUS . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (46) const -> PLUS IDENTIFIER .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    MULTIPLY        reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    DIV             reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    DIVIDE          reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    MOD             reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    AND             reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    PLUS            reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    MINUS           reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    OR              reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    LESS_THAN       reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    LESS_THAN_EQUALS reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    GREATER_THAN    reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    GREATER_THAN_EQUALS reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    NOT_EQUALS      reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    EQUALS          reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    SEMICOLON       reduce using rule 46 (const -> PLUS IDENTIFIER .)
+    RPAREN          reduce using rule 46 (const -> PLUS IDENTIFIER .)
 
-    term                           shift and go to state 41
-    simpleexpression               shift and go to state 88
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
 
 state 63
 
-    (31) simpleexpression -> term OR . simpleexpression
-    (28) simpleexpression -> . term genquad
-    (29) simpleexpression -> . term PLUS simpleexpression
-    (30) simpleexpression -> . term MINUS simpleexpression
-    (31) simpleexpression -> . term OR simpleexpression
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
+    (49) const -> PLUS NUMBER_CONST .
 
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
+    MULTIPLY        reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    DIV             reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    DIVIDE          reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    MOD             reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    AND             reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    PLUS            reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    MINUS           reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    OR              reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    LESS_THAN       reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    LESS_THAN_EQUALS reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    GREATER_THAN    reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    GREATER_THAN_EQUALS reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    NOT_EQUALS      reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    EQUALS          reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    SEMICOLON       reduce using rule 49 (const -> PLUS NUMBER_CONST .)
+    RPAREN          reduce using rule 49 (const -> PLUS NUMBER_CONST .)
 
-    term                           shift and go to state 41
-    simpleexpression               shift and go to state 89
-    factor                         shift and go to state 44
-    const                          shift and go to state 45
 
 state 64
 
-    (43) const -> PLUS IDENTIFIER .
+    (47) const -> MINUS IDENTIFIER .
 
-    DIV             reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    MULTIPLY        reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    DIVIDE          reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    MOD             reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    AND             reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    PLUSPLUS        reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    MINUSMINUS      reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    PLUS            reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    MINUS           reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    OR              reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    LESS_THAN       reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    LESS_THAN_EQUALS reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    GREATER_THAN    reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    GREATER_THAN_EQUALS reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    NOT_EQUALS      reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    EQUALS          reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    SEMICOLON       reduce using rule 43 (const -> PLUS IDENTIFIER .)
-    RPAREN          reduce using rule 43 (const -> PLUS IDENTIFIER .)
+    MULTIPLY        reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    DIV             reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    DIVIDE          reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    MOD             reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    AND             reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    PLUS            reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    MINUS           reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    OR              reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    LESS_THAN       reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    LESS_THAN_EQUALS reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    GREATER_THAN    reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    GREATER_THAN_EQUALS reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    NOT_EQUALS      reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    EQUALS          reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    SEMICOLON       reduce using rule 47 (const -> MINUS IDENTIFIER .)
+    RPAREN          reduce using rule 47 (const -> MINUS IDENTIFIER .)
 
 
 state 65
 
-    (46) const -> PLUS NUMBER_CONST .
+    (50) const -> MINUS NUMBER_CONST .
 
-    DIV             reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    MULTIPLY        reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    DIVIDE          reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    MOD             reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    AND             reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    PLUSPLUS        reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    MINUSMINUS      reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    PLUS            reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    MINUS           reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    OR              reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    LESS_THAN       reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    LESS_THAN_EQUALS reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    GREATER_THAN    reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    GREATER_THAN_EQUALS reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    NOT_EQUALS      reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    EQUALS          reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    SEMICOLON       reduce using rule 46 (const -> PLUS NUMBER_CONST .)
-    RPAREN          reduce using rule 46 (const -> PLUS NUMBER_CONST .)
+    MULTIPLY        reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    DIV             reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    DIVIDE          reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    MOD             reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    AND             reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    PLUS            reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    MINUS           reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    OR              reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    LESS_THAN       reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    LESS_THAN_EQUALS reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    GREATER_THAN    reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    GREATER_THAN_EQUALS reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    NOT_EQUALS      reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    EQUALS          reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    SEMICOLON       reduce using rule 50 (const -> MINUS NUMBER_CONST .)
+    RPAREN          reduce using rule 50 (const -> MINUS NUMBER_CONST .)
 
 
 state 66
 
-    (44) const -> MINUS IDENTIFIER .
+    (53) writefunction -> PRINT LPAREN expression RPAREN . SEMICOLON
 
-    DIV             reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    MULTIPLY        reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    DIVIDE          reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    MOD             reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    AND             reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    PLUSPLUS        reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    MINUSMINUS      reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    PLUS            reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    MINUS           reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    OR              reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    LESS_THAN       reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    LESS_THAN_EQUALS reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    GREATER_THAN    reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    GREATER_THAN_EQUALS reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    NOT_EQUALS      reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    EQUALS          reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    SEMICOLON       reduce using rule 44 (const -> MINUS IDENTIFIER .)
-    RPAREN          reduce using rule 44 (const -> MINUS IDENTIFIER .)
+    SEMICOLON       shift and go to state 89
 
 
 state 67
 
-    (47) const -> MINUS NUMBER_CONST .
+    (54) writefunction -> WRITE LPAREN expression RPAREN . SEMICOLON
 
-    DIV             reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    MULTIPLY        reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    DIVIDE          reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    MOD             reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    AND             reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    PLUSPLUS        reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    MINUSMINUS      reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    PLUS            reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    MINUS           reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    OR              reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    LESS_THAN       reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    LESS_THAN_EQUALS reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    GREATER_THAN    reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    GREATER_THAN_EQUALS reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    NOT_EQUALS      reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    EQUALS          reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    SEMICOLON       reduce using rule 47 (const -> MINUS NUMBER_CONST .)
-    RPAREN          reduce using rule 47 (const -> MINUS NUMBER_CONST .)
+    SEMICOLON       shift and go to state 90
 
 
 state 68
-
-    (32) term -> factor genquad .
-
-    PLUS            reduce using rule 32 (term -> factor genquad .)
-    MINUS           reduce using rule 32 (term -> factor genquad .)
-    OR              reduce using rule 32 (term -> factor genquad .)
-    LESS_THAN       reduce using rule 32 (term -> factor genquad .)
-    LESS_THAN_EQUALS reduce using rule 32 (term -> factor genquad .)
-    GREATER_THAN    reduce using rule 32 (term -> factor genquad .)
-    GREATER_THAN_EQUALS reduce using rule 32 (term -> factor genquad .)
-    NOT_EQUALS      reduce using rule 32 (term -> factor genquad .)
-    EQUALS          reduce using rule 32 (term -> factor genquad .)
-    SEMICOLON       reduce using rule 32 (term -> factor genquad .)
-    RPAREN          reduce using rule 32 (term -> factor genquad .)
-
-
-state 69
-
-    (33) term -> factor DIV . term
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
-
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
-
-    factor                         shift and go to state 44
-    term                           shift and go to state 90
-    const                          shift and go to state 45
-
-state 70
-
-    (34) term -> factor MULTIPLY . term
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
-
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
-
-    factor                         shift and go to state 44
-    term                           shift and go to state 91
-    const                          shift and go to state 45
-
-state 71
-
-    (35) term -> factor DIVIDE . term
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
-
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
-
-    factor                         shift and go to state 44
-    term                           shift and go to state 92
-    const                          shift and go to state 45
-
-state 72
-
-    (36) term -> factor MOD . term
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
-
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
-
-    factor                         shift and go to state 44
-    term                           shift and go to state 93
-    const                          shift and go to state 45
-
-state 73
-
-    (37) term -> factor AND . term
-    (32) term -> . factor genquad
-    (33) term -> . factor DIV term
-    (34) term -> . factor MULTIPLY term
-    (35) term -> . factor DIVIDE term
-    (36) term -> . factor MOD term
-    (37) term -> . factor AND term
-    (38) term -> . factor PLUSPLUS
-    (39) term -> . factor MINUSMINUS
-    (41) factor -> . const
-    (42) factor -> . LPAREN expression RPAREN
-    (43) const -> . PLUS IDENTIFIER
-    (44) const -> . MINUS IDENTIFIER
-    (45) const -> . IDENTIFIER
-    (46) const -> . PLUS NUMBER_CONST
-    (47) const -> . MINUS NUMBER_CONST
-    (48) const -> . NUMBER_CONST
-    (49) const -> . STRING_CONST
-
-    LPAREN          shift and go to state 46
-    PLUS            shift and go to state 42
-    MINUS           shift and go to state 43
-    IDENTIFIER      shift and go to state 38
-    NUMBER_CONST    shift and go to state 47
-    STRING_CONST    shift and go to state 48
-
-    factor                         shift and go to state 44
-    term                           shift and go to state 94
-    const                          shift and go to state 45
-
-state 74
-
-    (38) term -> factor PLUSPLUS .
-
-    PLUS            reduce using rule 38 (term -> factor PLUSPLUS .)
-    MINUS           reduce using rule 38 (term -> factor PLUSPLUS .)
-    OR              reduce using rule 38 (term -> factor PLUSPLUS .)
-    LESS_THAN       reduce using rule 38 (term -> factor PLUSPLUS .)
-    LESS_THAN_EQUALS reduce using rule 38 (term -> factor PLUSPLUS .)
-    GREATER_THAN    reduce using rule 38 (term -> factor PLUSPLUS .)
-    GREATER_THAN_EQUALS reduce using rule 38 (term -> factor PLUSPLUS .)
-    NOT_EQUALS      reduce using rule 38 (term -> factor PLUSPLUS .)
-    EQUALS          reduce using rule 38 (term -> factor PLUSPLUS .)
-    SEMICOLON       reduce using rule 38 (term -> factor PLUSPLUS .)
-    RPAREN          reduce using rule 38 (term -> factor PLUSPLUS .)
-
-
-state 75
-
-    (39) term -> factor MINUSMINUS .
-
-    PLUS            reduce using rule 39 (term -> factor MINUSMINUS .)
-    MINUS           reduce using rule 39 (term -> factor MINUSMINUS .)
-    OR              reduce using rule 39 (term -> factor MINUSMINUS .)
-    LESS_THAN       reduce using rule 39 (term -> factor MINUSMINUS .)
-    LESS_THAN_EQUALS reduce using rule 39 (term -> factor MINUSMINUS .)
-    GREATER_THAN    reduce using rule 39 (term -> factor MINUSMINUS .)
-    GREATER_THAN_EQUALS reduce using rule 39 (term -> factor MINUSMINUS .)
-    NOT_EQUALS      reduce using rule 39 (term -> factor MINUSMINUS .)
-    EQUALS          reduce using rule 39 (term -> factor MINUSMINUS .)
-    SEMICOLON       reduce using rule 39 (term -> factor MINUSMINUS .)
-    RPAREN          reduce using rule 39 (term -> factor MINUSMINUS .)
-
-
-state 76
-
-    (42) factor -> LPAREN expression . RPAREN
-
-    RPAREN          shift and go to state 95
-
-
-state 77
-
-    (50) writefunction -> PRINT LPAREN expression RPAREN . SEMICOLON
-
-    SEMICOLON       shift and go to state 96
-
-
-state 78
-
-    (51) writefunction -> WRITE LPAREN expression RPAREN . SEMICOLON
-
-    SEMICOLON       shift and go to state 97
-
-
-state 79
 
     (3) vars -> VAR varsp COLON type seentype SEMICOLON vars .
 
     BEGIN           reduce using rule 3 (vars -> VAR varsp COLON type seentype SEMICOLON vars .)
 
 
+state 69
+
+    (19) assign -> IDENTIFIER ASSIGNOP expression assignnow SEMICOLON .
+
+    IDENTIFIER      reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression assignnow SEMICOLON .)
+    PRINT           reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression assignnow SEMICOLON .)
+    WRITE           reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression assignnow SEMICOLON .)
+    END             reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression assignnow SEMICOLON .)
+
+
+state 70
+
+    (22) expression -> simpleexpression LESS_THAN seenoperator . simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 91
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 71
+
+    (23) expression -> simpleexpression LESS_THAN_EQUALS seenoperator . simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 92
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 72
+
+    (24) expression -> simpleexpression GREATER_THAN seenoperator . simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 93
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 73
+
+    (25) expression -> simpleexpression GREATER_THAN_EQUALS seenoperator . simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 94
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 74
+
+    (26) expression -> simpleexpression NOT_EQUALS seenoperator . simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 95
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 75
+
+    (27) expression -> simpleexpression EQUALS seenoperator . simpleexpression genquad
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 96
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 76
+
+    (28) simpleexpression -> term seenterm simpleexpressionp .
+
+    LESS_THAN       reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    LESS_THAN_EQUALS reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    GREATER_THAN    reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    GREATER_THAN_EQUALS reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    NOT_EQUALS      reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    EQUALS          reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    SEMICOLON       reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+    RPAREN          reduce using rule 28 (simpleexpression -> term seenterm simpleexpressionp .)
+
+
+state 77
+
+    (30) simpleexpressionp -> empty .
+
+    LESS_THAN       reduce using rule 30 (simpleexpressionp -> empty .)
+    LESS_THAN_EQUALS reduce using rule 30 (simpleexpressionp -> empty .)
+    GREATER_THAN    reduce using rule 30 (simpleexpressionp -> empty .)
+    GREATER_THAN_EQUALS reduce using rule 30 (simpleexpressionp -> empty .)
+    NOT_EQUALS      reduce using rule 30 (simpleexpressionp -> empty .)
+    EQUALS          reduce using rule 30 (simpleexpressionp -> empty .)
+    SEMICOLON       reduce using rule 30 (simpleexpressionp -> empty .)
+    RPAREN          reduce using rule 30 (simpleexpressionp -> empty .)
+
+
+state 78
+
+    (31) simpleexpressionp -> PLUS . seenoperator simpleexpression
+    (41) seenoperator -> .
+
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
+
+    seenoperator                   shift and go to state 97
+
+state 79
+
+    (32) simpleexpressionp -> MINUS . seenoperator simpleexpression
+    (41) seenoperator -> .
+
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
+
+    seenoperator                   shift and go to state 98
+
 state 80
 
-    (19) assign -> IDENTIFIER ASSIGNOP expression genquad assignnow . SEMICOLON
+    (33) simpleexpressionp -> OR . seenoperator simpleexpression
+    (41) seenoperator -> .
 
-    SEMICOLON       shift and go to state 98
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 99
 
 state 81
 
-    (22) expression -> simpleexpression LESS_THAN simpleexpression .
+    (34) term -> factor seenfactor termp .
 
-    SEMICOLON       reduce using rule 22 (expression -> simpleexpression LESS_THAN simpleexpression .)
-    RPAREN          reduce using rule 22 (expression -> simpleexpression LESS_THAN simpleexpression .)
+    PLUS            reduce using rule 34 (term -> factor seenfactor termp .)
+    MINUS           reduce using rule 34 (term -> factor seenfactor termp .)
+    OR              reduce using rule 34 (term -> factor seenfactor termp .)
+    LESS_THAN       reduce using rule 34 (term -> factor seenfactor termp .)
+    LESS_THAN_EQUALS reduce using rule 34 (term -> factor seenfactor termp .)
+    GREATER_THAN    reduce using rule 34 (term -> factor seenfactor termp .)
+    GREATER_THAN_EQUALS reduce using rule 34 (term -> factor seenfactor termp .)
+    NOT_EQUALS      reduce using rule 34 (term -> factor seenfactor termp .)
+    EQUALS          reduce using rule 34 (term -> factor seenfactor termp .)
+    SEMICOLON       reduce using rule 34 (term -> factor seenfactor termp .)
+    RPAREN          reduce using rule 34 (term -> factor seenfactor termp .)
 
 
 state 82
 
-    (23) expression -> simpleexpression LESS_THAN_EQUALS simpleexpression .
+    (35) termp -> empty .
 
-    SEMICOLON       reduce using rule 23 (expression -> simpleexpression LESS_THAN_EQUALS simpleexpression .)
-    RPAREN          reduce using rule 23 (expression -> simpleexpression LESS_THAN_EQUALS simpleexpression .)
+    PLUS            reduce using rule 35 (termp -> empty .)
+    MINUS           reduce using rule 35 (termp -> empty .)
+    OR              reduce using rule 35 (termp -> empty .)
+    LESS_THAN       reduce using rule 35 (termp -> empty .)
+    LESS_THAN_EQUALS reduce using rule 35 (termp -> empty .)
+    GREATER_THAN    reduce using rule 35 (termp -> empty .)
+    GREATER_THAN_EQUALS reduce using rule 35 (termp -> empty .)
+    NOT_EQUALS      reduce using rule 35 (termp -> empty .)
+    EQUALS          reduce using rule 35 (termp -> empty .)
+    SEMICOLON       reduce using rule 35 (termp -> empty .)
+    RPAREN          reduce using rule 35 (termp -> empty .)
 
 
 state 83
 
-    (24) expression -> simpleexpression GREATER_THAN simpleexpression .
+    (36) termp -> MULTIPLY . seenoperator term
+    (41) seenoperator -> .
 
-    SEMICOLON       reduce using rule 24 (expression -> simpleexpression GREATER_THAN simpleexpression .)
-    RPAREN          reduce using rule 24 (expression -> simpleexpression GREATER_THAN simpleexpression .)
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 100
 
 state 84
 
-    (25) expression -> simpleexpression GREATER_THAN_EQUALS simpleexpression .
+    (37) termp -> DIV . seenoperator term
+    (41) seenoperator -> .
 
-    SEMICOLON       reduce using rule 25 (expression -> simpleexpression GREATER_THAN_EQUALS simpleexpression .)
-    RPAREN          reduce using rule 25 (expression -> simpleexpression GREATER_THAN_EQUALS simpleexpression .)
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 101
 
 state 85
 
-    (26) expression -> simpleexpression NOT_EQUALS simpleexpression .
+    (38) termp -> DIVIDE . seenoperator term
+    (41) seenoperator -> .
 
-    SEMICOLON       reduce using rule 26 (expression -> simpleexpression NOT_EQUALS simpleexpression .)
-    RPAREN          reduce using rule 26 (expression -> simpleexpression NOT_EQUALS simpleexpression .)
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 102
 
 state 86
 
-    (27) expression -> simpleexpression EQUALS simpleexpression .
+    (39) termp -> MOD . seenoperator term
+    (41) seenoperator -> .
 
-    SEMICOLON       reduce using rule 27 (expression -> simpleexpression EQUALS simpleexpression .)
-    RPAREN          reduce using rule 27 (expression -> simpleexpression EQUALS simpleexpression .)
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 103
 
 state 87
 
-    (29) simpleexpression -> term PLUS simpleexpression .
+    (40) termp -> AND . seenoperator term
+    (41) seenoperator -> .
 
-    LESS_THAN       reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    LESS_THAN_EQUALS reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    GREATER_THAN    reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    GREATER_THAN_EQUALS reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    NOT_EQUALS      reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    EQUALS          reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    SEMICOLON       reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
-    RPAREN          reduce using rule 29 (simpleexpression -> term PLUS simpleexpression .)
+    LPAREN          reduce using rule 41 (seenoperator -> .)
+    PLUS            reduce using rule 41 (seenoperator -> .)
+    MINUS           reduce using rule 41 (seenoperator -> .)
+    IDENTIFIER      reduce using rule 41 (seenoperator -> .)
+    NUMBER_CONST    reduce using rule 41 (seenoperator -> .)
+    STRING_CONST    reduce using rule 41 (seenoperator -> .)
 
+    seenoperator                   shift and go to state 104
 
 state 88
 
-    (30) simpleexpression -> term MINUS simpleexpression .
+    (45) factor -> LPAREN expression RPAREN .
 
-    LESS_THAN       reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    LESS_THAN_EQUALS reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    GREATER_THAN    reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    GREATER_THAN_EQUALS reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    NOT_EQUALS      reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    EQUALS          reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    SEMICOLON       reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
-    RPAREN          reduce using rule 30 (simpleexpression -> term MINUS simpleexpression .)
+    MULTIPLY        reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    DIV             reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    MOD             reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    AND             reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    OR              reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    LESS_THAN       reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    LESS_THAN_EQUALS reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    GREATER_THAN    reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    GREATER_THAN_EQUALS reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    NOT_EQUALS      reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    EQUALS          reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    SEMICOLON       reduce using rule 45 (factor -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 45 (factor -> LPAREN expression RPAREN .)
 
 
 state 89
 
-    (31) simpleexpression -> term OR simpleexpression .
+    (53) writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .
 
-    LESS_THAN       reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    LESS_THAN_EQUALS reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    GREATER_THAN    reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    GREATER_THAN_EQUALS reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    NOT_EQUALS      reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    EQUALS          reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    SEMICOLON       reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
-    RPAREN          reduce using rule 31 (simpleexpression -> term OR simpleexpression .)
+    IDENTIFIER      reduce using rule 53 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
+    PRINT           reduce using rule 53 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
+    WRITE           reduce using rule 53 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
+    END             reduce using rule 53 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
 
 
 state 90
 
-    (33) term -> factor DIV term .
+    (54) writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .
 
-    PLUS            reduce using rule 33 (term -> factor DIV term .)
-    MINUS           reduce using rule 33 (term -> factor DIV term .)
-    OR              reduce using rule 33 (term -> factor DIV term .)
-    LESS_THAN       reduce using rule 33 (term -> factor DIV term .)
-    LESS_THAN_EQUALS reduce using rule 33 (term -> factor DIV term .)
-    GREATER_THAN    reduce using rule 33 (term -> factor DIV term .)
-    GREATER_THAN_EQUALS reduce using rule 33 (term -> factor DIV term .)
-    NOT_EQUALS      reduce using rule 33 (term -> factor DIV term .)
-    EQUALS          reduce using rule 33 (term -> factor DIV term .)
-    SEMICOLON       reduce using rule 33 (term -> factor DIV term .)
-    RPAREN          reduce using rule 33 (term -> factor DIV term .)
+    IDENTIFIER      reduce using rule 54 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
+    PRINT           reduce using rule 54 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
+    WRITE           reduce using rule 54 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
+    END             reduce using rule 54 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
 
 
 state 91
 
-    (34) term -> factor MULTIPLY term .
+    (22) expression -> simpleexpression LESS_THAN seenoperator simpleexpression . genquad
+    (43) genquad -> .
 
-    PLUS            reduce using rule 34 (term -> factor MULTIPLY term .)
-    MINUS           reduce using rule 34 (term -> factor MULTIPLY term .)
-    OR              reduce using rule 34 (term -> factor MULTIPLY term .)
-    LESS_THAN       reduce using rule 34 (term -> factor MULTIPLY term .)
-    LESS_THAN_EQUALS reduce using rule 34 (term -> factor MULTIPLY term .)
-    GREATER_THAN    reduce using rule 34 (term -> factor MULTIPLY term .)
-    GREATER_THAN_EQUALS reduce using rule 34 (term -> factor MULTIPLY term .)
-    NOT_EQUALS      reduce using rule 34 (term -> factor MULTIPLY term .)
-    EQUALS          reduce using rule 34 (term -> factor MULTIPLY term .)
-    SEMICOLON       reduce using rule 34 (term -> factor MULTIPLY term .)
-    RPAREN          reduce using rule 34 (term -> factor MULTIPLY term .)
+    SEMICOLON       reduce using rule 43 (genquad -> .)
+    RPAREN          reduce using rule 43 (genquad -> .)
 
+    genquad                        shift and go to state 105
 
 state 92
 
-    (35) term -> factor DIVIDE term .
+    (23) expression -> simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression . genquad
+    (43) genquad -> .
 
-    PLUS            reduce using rule 35 (term -> factor DIVIDE term .)
-    MINUS           reduce using rule 35 (term -> factor DIVIDE term .)
-    OR              reduce using rule 35 (term -> factor DIVIDE term .)
-    LESS_THAN       reduce using rule 35 (term -> factor DIVIDE term .)
-    LESS_THAN_EQUALS reduce using rule 35 (term -> factor DIVIDE term .)
-    GREATER_THAN    reduce using rule 35 (term -> factor DIVIDE term .)
-    GREATER_THAN_EQUALS reduce using rule 35 (term -> factor DIVIDE term .)
-    NOT_EQUALS      reduce using rule 35 (term -> factor DIVIDE term .)
-    EQUALS          reduce using rule 35 (term -> factor DIVIDE term .)
-    SEMICOLON       reduce using rule 35 (term -> factor DIVIDE term .)
-    RPAREN          reduce using rule 35 (term -> factor DIVIDE term .)
+    SEMICOLON       reduce using rule 43 (genquad -> .)
+    RPAREN          reduce using rule 43 (genquad -> .)
 
+    genquad                        shift and go to state 106
 
 state 93
 
-    (36) term -> factor MOD term .
+    (24) expression -> simpleexpression GREATER_THAN seenoperator simpleexpression . genquad
+    (43) genquad -> .
 
-    PLUS            reduce using rule 36 (term -> factor MOD term .)
-    MINUS           reduce using rule 36 (term -> factor MOD term .)
-    OR              reduce using rule 36 (term -> factor MOD term .)
-    LESS_THAN       reduce using rule 36 (term -> factor MOD term .)
-    LESS_THAN_EQUALS reduce using rule 36 (term -> factor MOD term .)
-    GREATER_THAN    reduce using rule 36 (term -> factor MOD term .)
-    GREATER_THAN_EQUALS reduce using rule 36 (term -> factor MOD term .)
-    NOT_EQUALS      reduce using rule 36 (term -> factor MOD term .)
-    EQUALS          reduce using rule 36 (term -> factor MOD term .)
-    SEMICOLON       reduce using rule 36 (term -> factor MOD term .)
-    RPAREN          reduce using rule 36 (term -> factor MOD term .)
+    SEMICOLON       reduce using rule 43 (genquad -> .)
+    RPAREN          reduce using rule 43 (genquad -> .)
 
+    genquad                        shift and go to state 107
 
 state 94
 
-    (37) term -> factor AND term .
+    (25) expression -> simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression . genquad
+    (43) genquad -> .
 
-    PLUS            reduce using rule 37 (term -> factor AND term .)
-    MINUS           reduce using rule 37 (term -> factor AND term .)
-    OR              reduce using rule 37 (term -> factor AND term .)
-    LESS_THAN       reduce using rule 37 (term -> factor AND term .)
-    LESS_THAN_EQUALS reduce using rule 37 (term -> factor AND term .)
-    GREATER_THAN    reduce using rule 37 (term -> factor AND term .)
-    GREATER_THAN_EQUALS reduce using rule 37 (term -> factor AND term .)
-    NOT_EQUALS      reduce using rule 37 (term -> factor AND term .)
-    EQUALS          reduce using rule 37 (term -> factor AND term .)
-    SEMICOLON       reduce using rule 37 (term -> factor AND term .)
-    RPAREN          reduce using rule 37 (term -> factor AND term .)
+    SEMICOLON       reduce using rule 43 (genquad -> .)
+    RPAREN          reduce using rule 43 (genquad -> .)
 
+    genquad                        shift and go to state 108
 
 state 95
 
-    (42) factor -> LPAREN expression RPAREN .
+    (26) expression -> simpleexpression NOT_EQUALS seenoperator simpleexpression . genquad
+    (43) genquad -> .
 
-    DIV             reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    MULTIPLY        reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    MOD             reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    AND             reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    PLUSPLUS        reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    MINUSMINUS      reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    OR              reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    LESS_THAN       reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    LESS_THAN_EQUALS reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    GREATER_THAN    reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    GREATER_THAN_EQUALS reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    NOT_EQUALS      reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    EQUALS          reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    SEMICOLON       reduce using rule 42 (factor -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 42 (factor -> LPAREN expression RPAREN .)
+    SEMICOLON       reduce using rule 43 (genquad -> .)
+    RPAREN          reduce using rule 43 (genquad -> .)
 
+    genquad                        shift and go to state 109
 
 state 96
 
-    (50) writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .
+    (27) expression -> simpleexpression EQUALS seenoperator simpleexpression . genquad
+    (43) genquad -> .
 
-    IDENTIFIER      reduce using rule 50 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
-    PRINT           reduce using rule 50 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
-    WRITE           reduce using rule 50 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
-    END             reduce using rule 50 (writefunction -> PRINT LPAREN expression RPAREN SEMICOLON .)
+    SEMICOLON       reduce using rule 43 (genquad -> .)
+    RPAREN          reduce using rule 43 (genquad -> .)
 
+    genquad                        shift and go to state 110
 
 state 97
 
-    (51) writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .
+    (31) simpleexpressionp -> PLUS seenoperator . simpleexpression
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
 
-    IDENTIFIER      reduce using rule 51 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
-    PRINT           reduce using rule 51 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
-    WRITE           reduce using rule 51 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
-    END             reduce using rule 51 (writefunction -> WRITE LPAREN expression RPAREN SEMICOLON .)
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
 
+    simpleexpression               shift and go to state 111
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
 
 state 98
 
-    (19) assign -> IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON .
+    (32) simpleexpressionp -> MINUS seenoperator . simpleexpression
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
 
-    IDENTIFIER      reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON .)
-    PRINT           reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON .)
-    WRITE           reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON .)
-    END             reduce using rule 19 (assign -> IDENTIFIER ASSIGNOP expression genquad assignnow SEMICOLON .)
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 112
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 99
+
+    (33) simpleexpressionp -> OR seenoperator . simpleexpression
+    (28) simpleexpression -> . term seenterm simpleexpressionp
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    simpleexpression               shift and go to state 113
+    term                           shift and go to state 41
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 100
+
+    (36) termp -> MULTIPLY seenoperator . term
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    term                           shift and go to state 114
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 101
+
+    (37) termp -> DIV seenoperator . term
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    term                           shift and go to state 115
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 102
+
+    (38) termp -> DIVIDE seenoperator . term
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    term                           shift and go to state 116
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 103
+
+    (39) termp -> MOD seenoperator . term
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    term                           shift and go to state 117
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 104
+
+    (40) termp -> AND seenoperator . term
+    (34) term -> . factor seenfactor termp
+    (44) factor -> . const
+    (45) factor -> . LPAREN expression RPAREN
+    (46) const -> . PLUS IDENTIFIER
+    (47) const -> . MINUS IDENTIFIER
+    (48) const -> . IDENTIFIER
+    (49) const -> . PLUS NUMBER_CONST
+    (50) const -> . MINUS NUMBER_CONST
+    (51) const -> . NUMBER_CONST
+    (52) const -> . STRING_CONST
+
+    LPAREN          shift and go to state 44
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    IDENTIFIER      shift and go to state 38
+    NUMBER_CONST    shift and go to state 47
+    STRING_CONST    shift and go to state 48
+
+    term                           shift and go to state 118
+    factor                         shift and go to state 42
+    const                          shift and go to state 43
+
+state 105
+
+    (22) expression -> simpleexpression LESS_THAN seenoperator simpleexpression genquad .
+
+    SEMICOLON       reduce using rule 22 (expression -> simpleexpression LESS_THAN seenoperator simpleexpression genquad .)
+    RPAREN          reduce using rule 22 (expression -> simpleexpression LESS_THAN seenoperator simpleexpression genquad .)
+
+
+state 106
+
+    (23) expression -> simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad .
+
+    SEMICOLON       reduce using rule 23 (expression -> simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad .)
+    RPAREN          reduce using rule 23 (expression -> simpleexpression LESS_THAN_EQUALS seenoperator simpleexpression genquad .)
+
+
+state 107
+
+    (24) expression -> simpleexpression GREATER_THAN seenoperator simpleexpression genquad .
+
+    SEMICOLON       reduce using rule 24 (expression -> simpleexpression GREATER_THAN seenoperator simpleexpression genquad .)
+    RPAREN          reduce using rule 24 (expression -> simpleexpression GREATER_THAN seenoperator simpleexpression genquad .)
+
+
+state 108
+
+    (25) expression -> simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad .
+
+    SEMICOLON       reduce using rule 25 (expression -> simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad .)
+    RPAREN          reduce using rule 25 (expression -> simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad .)
+
+
+state 109
+
+    (26) expression -> simpleexpression NOT_EQUALS seenoperator simpleexpression genquad .
+
+    SEMICOLON       reduce using rule 26 (expression -> simpleexpression NOT_EQUALS seenoperator simpleexpression genquad .)
+    RPAREN          reduce using rule 26 (expression -> simpleexpression NOT_EQUALS seenoperator simpleexpression genquad .)
+
+
+state 110
+
+    (27) expression -> simpleexpression EQUALS seenoperator simpleexpression genquad .
+
+    SEMICOLON       reduce using rule 27 (expression -> simpleexpression EQUALS seenoperator simpleexpression genquad .)
+    RPAREN          reduce using rule 27 (expression -> simpleexpression EQUALS seenoperator simpleexpression genquad .)
+
+
+state 111
+
+    (31) simpleexpressionp -> PLUS seenoperator simpleexpression .
+
+    LESS_THAN       reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    LESS_THAN_EQUALS reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    GREATER_THAN    reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    GREATER_THAN_EQUALS reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    NOT_EQUALS      reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    EQUALS          reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    SEMICOLON       reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+    RPAREN          reduce using rule 31 (simpleexpressionp -> PLUS seenoperator simpleexpression .)
+
+
+state 112
+
+    (32) simpleexpressionp -> MINUS seenoperator simpleexpression .
+
+    LESS_THAN       reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    LESS_THAN_EQUALS reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    GREATER_THAN    reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    GREATER_THAN_EQUALS reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    NOT_EQUALS      reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    EQUALS          reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    SEMICOLON       reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+    RPAREN          reduce using rule 32 (simpleexpressionp -> MINUS seenoperator simpleexpression .)
+
+
+state 113
+
+    (33) simpleexpressionp -> OR seenoperator simpleexpression .
+
+    LESS_THAN       reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    LESS_THAN_EQUALS reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    GREATER_THAN    reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    GREATER_THAN_EQUALS reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    NOT_EQUALS      reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    EQUALS          reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    SEMICOLON       reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+    RPAREN          reduce using rule 33 (simpleexpressionp -> OR seenoperator simpleexpression .)
+
+
+state 114
+
+    (36) termp -> MULTIPLY seenoperator term .
+
+    PLUS            reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    MINUS           reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    OR              reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    LESS_THAN       reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    LESS_THAN_EQUALS reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    GREATER_THAN    reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    GREATER_THAN_EQUALS reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    NOT_EQUALS      reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    EQUALS          reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    SEMICOLON       reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+    RPAREN          reduce using rule 36 (termp -> MULTIPLY seenoperator term .)
+
+
+state 115
+
+    (37) termp -> DIV seenoperator term .
+
+    PLUS            reduce using rule 37 (termp -> DIV seenoperator term .)
+    MINUS           reduce using rule 37 (termp -> DIV seenoperator term .)
+    OR              reduce using rule 37 (termp -> DIV seenoperator term .)
+    LESS_THAN       reduce using rule 37 (termp -> DIV seenoperator term .)
+    LESS_THAN_EQUALS reduce using rule 37 (termp -> DIV seenoperator term .)
+    GREATER_THAN    reduce using rule 37 (termp -> DIV seenoperator term .)
+    GREATER_THAN_EQUALS reduce using rule 37 (termp -> DIV seenoperator term .)
+    NOT_EQUALS      reduce using rule 37 (termp -> DIV seenoperator term .)
+    EQUALS          reduce using rule 37 (termp -> DIV seenoperator term .)
+    SEMICOLON       reduce using rule 37 (termp -> DIV seenoperator term .)
+    RPAREN          reduce using rule 37 (termp -> DIV seenoperator term .)
+
+
+state 116
+
+    (38) termp -> DIVIDE seenoperator term .
+
+    PLUS            reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    MINUS           reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    OR              reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    LESS_THAN       reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    LESS_THAN_EQUALS reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    GREATER_THAN    reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    GREATER_THAN_EQUALS reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    NOT_EQUALS      reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    EQUALS          reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    SEMICOLON       reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+    RPAREN          reduce using rule 38 (termp -> DIVIDE seenoperator term .)
+
+
+state 117
+
+    (39) termp -> MOD seenoperator term .
+
+    PLUS            reduce using rule 39 (termp -> MOD seenoperator term .)
+    MINUS           reduce using rule 39 (termp -> MOD seenoperator term .)
+    OR              reduce using rule 39 (termp -> MOD seenoperator term .)
+    LESS_THAN       reduce using rule 39 (termp -> MOD seenoperator term .)
+    LESS_THAN_EQUALS reduce using rule 39 (termp -> MOD seenoperator term .)
+    GREATER_THAN    reduce using rule 39 (termp -> MOD seenoperator term .)
+    GREATER_THAN_EQUALS reduce using rule 39 (termp -> MOD seenoperator term .)
+    NOT_EQUALS      reduce using rule 39 (termp -> MOD seenoperator term .)
+    EQUALS          reduce using rule 39 (termp -> MOD seenoperator term .)
+    SEMICOLON       reduce using rule 39 (termp -> MOD seenoperator term .)
+    RPAREN          reduce using rule 39 (termp -> MOD seenoperator term .)
+
+
+state 118
+
+    (40) termp -> AND seenoperator term .
+
+    PLUS            reduce using rule 40 (termp -> AND seenoperator term .)
+    MINUS           reduce using rule 40 (termp -> AND seenoperator term .)
+    OR              reduce using rule 40 (termp -> AND seenoperator term .)
+    LESS_THAN       reduce using rule 40 (termp -> AND seenoperator term .)
+    LESS_THAN_EQUALS reduce using rule 40 (termp -> AND seenoperator term .)
+    GREATER_THAN    reduce using rule 40 (termp -> AND seenoperator term .)
+    GREATER_THAN_EQUALS reduce using rule 40 (termp -> AND seenoperator term .)
+    NOT_EQUALS      reduce using rule 40 (termp -> AND seenoperator term .)
+    EQUALS          reduce using rule 40 (termp -> AND seenoperator term .)
+    SEMICOLON       reduce using rule 40 (termp -> AND seenoperator term .)
+    RPAREN          reduce using rule 40 (termp -> AND seenoperator term .)
 
 WARNING: 
 WARNING: Conflicts:
