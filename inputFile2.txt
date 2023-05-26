@@ -4,5 +4,6 @@ program main {
 	var a : string;
 	begin;
 	x := x + 1;
+	write(x);
 	end;
 }

@@ -106,6 +106,11 @@ class QuadrupleManager:
         self.push_operand(result)
         self.add_quadruple(operator, operand, 1, result)
 
+    def generate_write(self):
+        operand = self.pop_operand()
+        self.pop_type()
+        self.add_quadruple('write', operand, None, None)
+
 
 quadrupleMan = QuadrupleManager()
 
@@ -365,13 +370,17 @@ def p_const(p):
         elif prevToken.type == "NUMBER_CONST":
             quadrupleMan.push_type(prevToken.type)
             quadrupleMan.push_operand(-float(p[2]))
-        # p[0] = float(p[2])
+        else:
+            # TODO
+            # Strings with positive sign
+            print('error string cannot be positive')
 
 
 def p_writefunction(p):
     '''writefunction : PRINT LPAREN expression RPAREN SEMICOLON
                     | WRITE LPAREN expression RPAREN SEMICOLON'''
-    print(p[3])
+    # print(p[3])
+    quadrupleMan.generate_write()
 
 
 def p_empty(p):
