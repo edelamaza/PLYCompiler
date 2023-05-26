@@ -99,6 +99,13 @@ class QuadrupleManager:
         self.add_quadruple(operator, operand1, None, result)
         self.pop_type()
 
+    def generate_repeat_op(self):
+        operator = self.pop_operator()
+        operand = self.pop_operand()
+        result = self.generate_temp()
+        self.push_operand(result)
+        self.add_quadruple(operator, operand, 1, result)
+
 
 quadrupleMan = QuadrupleManager()
 
@@ -143,7 +150,8 @@ def p_seentype(p):
     global varTempArr
     global varTable
     for id in varTempArr:
-        varTable[id] = [p[-1], None]
+        if p[-1] in ['int', 'real']:
+            varTable[id] = ['NUMBER_CONST', None]
 
     # TODO
     # Error handling for duplicate variables
@@ -247,6 +255,9 @@ def p_seenterm(p):
     if quadrupleMan.operators and quadrupleMan.operators[-1] in ['+', '-', 'OR']:
         # generate arithmetic
         quadrupleMan.generate_arithmetic()
+    if quadrupleMan.operators and quadrupleMan.operators[-1] in ['++', '--']:
+        # generate arithmetic
+        quadrupleMan.generate_repeat_op()
 
 
 def p_simpleexpressionp(p):
@@ -275,7 +286,9 @@ def p_termp(p):
             | DIV seenoperator term
             | DIVIDE seenoperator term
             | MOD seenoperator term
-            | AND seenoperator term '''
+            | AND seenoperator term 
+            | PLUSPLUS seenoperator
+            | MINUSMINUS seenoperator'''
 
 
 def p_seenoperator(p):
@@ -322,7 +335,7 @@ def p_const(p):
         if (prevToken.type == 'IDENTIFIER'):
             # Check VarTable to get Type
             quadrupleMan.push_type(varTable[prevToken.value][0])
-            quadrupleMan.push_operand(varTable[prevToken.value][1])
+            quadrupleMan.push_operand(prevToken.value)
         elif prevToken.type == "NUMBER_CONST":
             quadrupleMan.push_type(prevToken.type)
             quadrupleMan.push_operand(float(p[1]))
@@ -334,7 +347,7 @@ def p_const(p):
         if (prevToken.type == 'IDENTIFIER'):
             # Check VarTable to get Type
             quadrupleMan.push_type(varTable[prevToken.value][0])
-            quadrupleMan.push_operand(-varTable[prevToken.value][1])
+            quadrupleMan.push_operand(-prevToken.value)
             # p[0] = -float(p[2])
         elif prevToken.type == "NUMBER_CONST":
             quadrupleMan.push_type(prevToken.type)
@@ -348,7 +361,7 @@ def p_const(p):
         if (prevToken.type == 'IDENTIFIER'):
             # Check VarTable to get Type
             quadrupleMan.push_type(varTable[prevToken.value][0])
-            quadrupleMan.push_operand(-varTable[prevToken.value][1])
+            quadrupleMan.push_operand(prevToken.value)
         elif prevToken.type == "NUMBER_CONST":
             quadrupleMan.push_type(prevToken.type)
             quadrupleMan.push_operand(-float(p[2]))

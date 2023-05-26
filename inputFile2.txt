@@ -3,6 +3,6 @@ program main {
 	var y, z : real; 
 	var a : string;
 	begin;
-	z:= 5 > 3 AND 2 + 1 / 6 * 8 OR 1;
+	x := x + 1;
 	end;
 }
