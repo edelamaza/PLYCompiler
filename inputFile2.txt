@@ -1,9 +1,13 @@
 program main { 
-	var i, x : int; 
-	var y, z : real; 
-	var a : string;
-	begin;
-	x := x + 1;
-	write(x);
-	end;
+    var z : real; 
+    begin;
+    if( 3 > 1) then 
+    {
+        write("if");
+    } else if (2 > 4) then {
+        write("else");
+    } else {
+        write("wapapau");
+    }
+    end;
 }

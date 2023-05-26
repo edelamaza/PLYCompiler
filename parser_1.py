@@ -9,14 +9,16 @@ prevToken = ''
 
 
 class Quadruple:
-    def __init__(self, operator, operand1, operand2, result):
+    def __init__(self, index, operator, operand1, operand2, result):
+        self.index = index
         self.operator = operator
         self.operand1 = operand1
         self.operand2 = operand2
         self.result = result
 
     def print(self):
-        print(self.operator, self.operand1, self.operand2, self.result)
+        print(self.index, self.operator, self.operand1,
+              self.operand2, self.result)
 
 
 class QuadrupleManager:
@@ -34,8 +36,10 @@ class QuadrupleManager:
         return temp
 
     def add_quadruple(self, operator, operand1, operand2, result):
-        quadruple = Quadruple(operator, operand1, operand2, result)
+        index = len(self.quadruples)
+        quadruple = Quadruple(index, operator, operand1, operand2, result)
         self.quadruples.append(quadruple)
+        return index
 
     def push_operator(self, operator):
         self.operators.append(operator)
@@ -90,7 +94,10 @@ class QuadrupleManager:
             result = self.generate_temp()
             self.add_quadruple(operator, operand1, operand2, result)
             self.push_operand(result)
-            self.push_type(type1)
+            if operator in ['<', '>', '<=', '>=', '<>', '=']:
+                self.push_type('BOOLEAN')
+            else:
+                self.push_type(type1)
 
     def generate_assignment(self, identifier):
         operator = self.pop_operator()
@@ -110,6 +117,16 @@ class QuadrupleManager:
         operand = self.pop_operand()
         self.pop_type()
         self.add_quadruple('write', operand, None, None)
+
+    def check_bool(self):
+        type = self.pop_type()
+        if type == 'BOOLEAN':
+            return True
+        print('Error, boolean expression expected')
+        return False
+
+    def get_index(self):
+        return len(self.quadruples)
 
 
 quadrupleMan = QuadrupleManager()
@@ -196,12 +213,42 @@ def p_statement(_):
                 | assign
                 | assign statement
                 | writefunction
-                | writefunction statement'''
+                | writefunction statement
+                | condition
+                | condition statement'''
 
-# def p_condition(p):
-#     '''condition : IF LPAREN expression RPAREN THEN LCURLYBRACE statement RCURLYBRACE
-#                  | IF LPAREN expression RPAREN THEN LCURLYBRACE statement RCURLYBRACE ELSE LCURLYBRACE statement RCURLYBRACE'''
-#     # queda pendiente el else if
+
+def p_condition(p):
+    '''condition : IF LPAREN expression RPAREN checkbool seenif THEN LCURLYBRACE statement RCURLYBRACE seencurlyif seencurlyelse
+                | IF LPAREN expression RPAREN checkbool seenif THEN LCURLYBRACE statement RCURLYBRACE seencurlyif ELSE condition seencurlyelse
+                | IF LPAREN expression RPAREN checkbool seenif THEN LCURLYBRACE statement RCURLYBRACE seencurlyif ELSE LCURLYBRACE statement RCURLYBRACE seencurlyelse'''
+
+
+def p_checkbool(p):
+    'checkbool : '
+    if not quadrupleMan.check_bool():
+        p_error(p)
+
+
+def p_seenif(_):
+    'seenif : '
+    result = quadrupleMan.pop_operand()
+    index = quadrupleMan.add_quadruple('gotof', result, None, None)
+    quadrupleMan.push_jump(index)
+
+
+def p_seencurlyif(_):
+    'seencurlyif : '
+    index_goto = quadrupleMan.add_quadruple('goto', None, None, None)
+    index_gotof = quadrupleMan.pop_jump()
+    quadrupleMan.push_jump(index_goto)
+    quadrupleMan.quadruples[index_gotof].result = index_goto + 1
+
+
+def p_seencurlyelse(_):
+    'seencurlyelse : '
+    index_goto = quadrupleMan.pop_jump()
+    quadrupleMan.quadruples[index_goto].result = quadrupleMan.get_index()
 
 
 def p_assign(_):
@@ -254,8 +301,8 @@ def p_simpleexpression(p):
     #     p[0] = float(p[1]) / float(p[3])
 
 
-def p_seenterm(p):
-    '''seenterm :  '''
+def p_seenterm(_):
+    'seenterm :  '
     # check operator
     if quadrupleMan.operators and quadrupleMan.operators[-1] in ['+', '-', 'OR']:
         # generate arithmetic
@@ -291,7 +338,7 @@ def p_termp(p):
             | DIV seenoperator term
             | DIVIDE seenoperator term
             | MOD seenoperator term
-            | AND seenoperator term 
+            | AND seenoperator term
             | PLUSPLUS seenoperator
             | MINUSMINUS seenoperator'''
 
@@ -318,11 +365,16 @@ def p_genquad(_):
 
 def p_factor(p):
     '''factor : const
-                | LPAREN expression RPAREN'''
+                | LPAREN seenoperator expression RPAREN exitparen'''
     if len(p) == 2:
         p[0] = p[1]
     else:
         p[0] = p[2]
+
+
+def p_exitparen(_):
+    'exitparen : '
+    quadrupleMan.pop_operator()
 
 
 def p_const(p):
@@ -399,7 +451,7 @@ raw_input = input_file.read().split()
 print(raw_input)
 
 
-class PA2Lexer(object):
+class MyLexer(object):
     def token(self):
         global raw_input
         global currToken
@@ -422,7 +474,7 @@ class PA2Lexer(object):
         return return_token
 
 
-lexy = PA2Lexer()
+lexy = MyLexer()
 
 # Build the parser
 parser = yacc.yacc()

@@ -4,3 +4,7 @@ for -> ( -> assignment -> ; -> condition -> ; -> expression -> )
 
 
 se necesita else if?
+si
+
+fondo falso:
+cuando lees el parentesis que cierra, tenemos que tener guradado el indice del cuadruplo donde ira el resultado
