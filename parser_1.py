@@ -215,7 +215,9 @@ def p_statement(_):
                 | writefunction
                 | writefunction statement
                 | condition
-                | condition statement'''
+                | condition statement
+                | while
+                | while statement'''
 
 
 def p_condition(p):
@@ -249,6 +251,27 @@ def p_seencurlyelse(_):
     'seencurlyelse : '
     index_goto = quadrupleMan.pop_jump()
     quadrupleMan.quadruples[index_goto].result = quadrupleMan.get_index()
+
+
+def p_while(p):
+    'while : WHILE LPAREN expression RPAREN checkbool seenwhile DO LCURLYBRACE statement RCURLYBRACE seencurlywhile '
+
+
+def p_seenwhile(_):
+    'seenwhile : '
+    index = quadrupleMan.get_index()
+    quadrupleMan.push_jump(index)
+    result = quadrupleMan.pop_operand()
+    index_gotof = quadrupleMan.add_quadruple('gotof', result, None, None)
+    quadrupleMan.push_jump(index_gotof)
+
+
+def p_seencurlywhile(_):
+    'seencurlywhile : '
+    index_gotof = quadrupleMan.pop_jump()
+    index_goto = quadrupleMan.pop_jump()
+    quadrupleMan.add_quadruple('goto', index_goto, None, None)
+    quadrupleMan.quadruples[index_gotof].result = quadrupleMan.get_index()
 
 
 def p_assign(_):
