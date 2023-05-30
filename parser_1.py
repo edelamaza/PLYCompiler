@@ -451,11 +451,9 @@ def p_const(p):
             # Check VarTable to get Type
             quadrupleMan.push_type(varTable[prevToken.value][0])
             quadrupleMan.push_operand(-prevToken.value)
-            # p[0] = -float(p[2])
         elif prevToken.type == "NUMBER_CONST":
             quadrupleMan.push_type(prevToken.type)
             quadrupleMan.push_operand(-float(p[2]))
-            # p[0] = -float(p[2])
         else:
             # Strings with negative sign
             print('Error string cannot be negative')
@@ -469,8 +467,6 @@ def p_const(p):
             quadrupleMan.push_type(prevToken.type)
             quadrupleMan.push_operand(-float(p[2]))
         else:
-            # TODO
-            # Strings with positive sign
             print('Error string cannot be positive')
             p_error(p)
 

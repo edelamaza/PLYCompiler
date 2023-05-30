@@ -1,10 +1,9 @@
 program main{
-var i,n,f,x : int;
-var a: string;
+var i,n,f,x, a : int;
 begin;
 write("texto dump");
 f := 5;
-a := "hello";
+a := 4 MOD 3;
 for (x :=1 ; x>f ; x:= x*3)
 {
 	n := x + f;
