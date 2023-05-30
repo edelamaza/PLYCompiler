@@ -139,7 +139,7 @@ t_ignore = ' \t\r\n'
 # Build the lexer
 lexer = lex.lex()
 
-input_file_path = "inputFile2.txt"
+input_file_path = "inputFile.txt"
 input_file = open(input_file_path, "r")
 file_contents = input_file.read()
 lexer.input(file_contents)

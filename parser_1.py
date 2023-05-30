@@ -11,8 +11,6 @@ opTypeTable = {
     'NUMBER_CONST': ['NUMBER_CONST', 'int', 'real'],
     'STRING_CONST': ['STRING_CONST'],
     'BOOLEAN': ['BOOLEAN'],
-    'int': ['int', 'real', 'NUMBER_CONST'],
-    'real': ['real', 'NUMBER_CONST', 'int'],
 }
 
 
@@ -105,6 +103,12 @@ class QuadrupleManager:
             operand1 = self.pop_operand()
             operator = self.pop_operator()
             result = self.generate_temp()
+            # Add it into the variable table
+            if type1 == 'NUMBER_CONST':
+                varTable[result] = [type1, 0]
+            else:
+                varTable[result] = [type1, None]
+
             self.add_quadruple(operator, operand1, operand2, result)
             self.push_operand(result)
             if operator in ['<', '>', '<=', '>=', '<>', '=']:
@@ -121,13 +125,6 @@ class QuadrupleManager:
         result = identifier
         self.add_quadruple(operator, operand1, None, result)
         self.pop_type()
-
-    def generate_repeat_op(self):
-        operator = self.pop_operator()
-        operand = self.pop_operand()
-        result = self.generate_temp()
-        self.push_operand(result)
-        self.add_quadruple(operator, operand, 1, result)
 
     def generate_write(self):
         operand = self.pop_operand()
@@ -184,7 +181,12 @@ def p_seentype(p):
     global varTempArr
     global varTable
     for id in varTempArr:
-        varTable[id] = [p[-1], None]
+        if p[-1] in ['int', 'real']:
+            varTable[id] = ['NUMBER_CONST', 0]
+        elif p[-1] in ['boolean']:
+            varTable[id] = ['BOOLEAN', None]
+        elif p[-1] in ['string']:
+            varTable[id] = ['STRING_CONST', None]
 
     # TODO
     # Error handling for duplicate variables
@@ -219,7 +221,9 @@ def p_statement(_):
                 | for
                 | for statement
                 | IDENTIFIER PLUSPLUS seenunary SEMICOLON
-                | IDENTIFIER MINUSMINUS seenunary SEMICOLON'''
+                | IDENTIFIER MINUSMINUS seenunary SEMICOLON
+                | IDENTIFIER PLUSPLUS seenunary SEMICOLON statement
+                | IDENTIFIER MINUSMINUS seenunary SEMICOLON statement'''
 
 
 def p_condition(p):
@@ -272,7 +276,7 @@ def p_seencurlywhile(_):
     'seencurlywhile : '
     index_gotof = quadrupleMan.pop_jump()
     index_goto = quadrupleMan.pop_jump()
-    quadrupleMan.add_quadruple('goto', index_goto, None, None)
+    quadrupleMan.add_quadruple('goto', None, None, index_goto)
     quadrupleMan.quadruples[index_gotof].result = quadrupleMan.get_index()
 
 
@@ -357,9 +361,6 @@ def p_seenterm(_):
     if quadrupleMan.operators and quadrupleMan.operators[-1] in ['+', '-', 'OR']:
         # generate arithmetic
         quadrupleMan.generate_arithmetic()
-    if quadrupleMan.operators and quadrupleMan.operators[-1] in ['++', '--']:
-        # generate arithmetic
-        quadrupleMan.generate_repeat_op()
 
 
 def p_simpleexpressionp(p):
@@ -514,10 +515,75 @@ parser = yacc.yacc()
 
 
 result = parser.parse(lexer=lexy)
-quadrupleMan.write_quads()
+# quadrupleMan.write_quads()
+quadrupleMan.print_stacks()
 
-# Virtual Machine Execution
+
+# # Virtual Machine Execution
+
+op = {'+': lambda x, y: x + y,
+      '-': lambda x, y: x - y,
+      '/': lambda x, y: x / y,
+      '*': lambda x, y: x * y,
+      'DIV': lambda x, y: x // y,
+      'MOD': lambda x, y: x % y,
+      'AND': lambda x, y: x and y,
+      'OR': lambda x, y: x or y,
+      '<': lambda x, y: x < y,
+      '>': lambda x, y: x > y,
+      '<=': lambda x, y: x <= y,
+      '>=': lambda x, y: x >= y,
+      '=': lambda x, y: x == y,
+      '<>': lambda x, y: x != y}
+
+opUnary = {'++': lambda x: x + 1,
+           '--': lambda x: x - 1}
+
 i = 0
 while i < len(quadrupleMan.quadruples):
-    print(quadrupleMan.quadruples[i])
+    quadruple = quadrupleMan.quadruples[i]
+    # Switch Case
+    if quadruple.operator in ['write', 'print']:
+        # Check if operand is vartable
+        if quadruple.operand1 in varTable:
+            print(varTable[quadruple.operand1][1])
+        else:
+            print(quadruple.operand1)
+    elif quadruple.operator in ['+', '-', '*', '/', 'DIV', 'MOD', 'AND', 'OR', '<', '>', '<=', '>=', '=', '<>']:
+        # Check if oprand1 is variable
+        if quadruple.operand1 in varTable:
+            val1 = varTable[quadruple.operand1][1]
+        else:
+            val1 = quadruple.operand1
+        # Check if operand2 is variable
+        if quadruple.operand2 in varTable:
+            val2 = varTable[quadruple.operand2][1]
+        else:
+            val2 = quadruple.operand2
+
+        varTable[quadruple.result][1] = op[quadruple.operator](val1, val2)
+    elif quadruple.operator in ['++', '--']:
+        varTable[quadruple.result][1] = opUnary[quadruple.operator](
+            varTable[quadruple.operand1][1])
+
+    elif quadruple.operator == ':=':
+        # Check if operand1 is variable
+        if quadruple.operand1 in varTable:
+            varTable[quadruple.result][1] = varTable[quadruple.operand1][1]
+        else:
+            varTable[quadruple.result][1] = quadruple.operand1
+    elif quadruple.operator == 'goto':
+        i = quadruple.result
+        continue
+    elif quadruple.operator == 'gotof':
+        if not varTable[quadruple.operand1][1]:
+            i = quadruple.result
+            continue
+    elif quadruple.operator == 'gotov':
+        if varTable[quadruple.operand1][1]:
+            i = quadruple.result
+            continue
+
     i += 1
+
+print(varTable)
