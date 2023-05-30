@@ -1,12 +1,12 @@
-0 write texto dump None None
-1 := 5.0 None f
-2 := 0.0 None x
-3 > x n t0
-4 gotov t0 None 8
-5 gotof t0 None 11
-6 ++ x 1 x
-7 goto None None 3
-8 + x f t1
-9 := t1 None n
-10 goto None None 6
-11 write n None None
+0~write~texto dump~None~None
+1~:=~5.0~None~f
+2~:=~0.0~None~x
+3~>~x~n~t0
+4~gotov~t0~None~8
+5~gotof~t0~None~11
+6~++~x~1~x
+7~goto~None~None~3
+8~+~x~f~t1
+9~:=~t1~None~n
+10~goto~None~None~6
+11~write~n~None~None

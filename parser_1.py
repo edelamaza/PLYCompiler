@@ -59,7 +59,6 @@ class QuadrupleManager:
 
     def push_type(self, data_type):
         self.types.append(data_type)
-        print('Pushed type: ', data_type, 'to stack')
 
     def pop_type(self):
         if self.types:
@@ -94,7 +93,7 @@ class QuadrupleManager:
         with open('quadruples.txt', 'w') as f:
             for quad in self.quadruples:
                 f.write(
-                    f"{quad.index} {quad.operator} {quad.operand1} {quad.operand2} {quad.result}\n")
+                    f"{quad.index}~{quad.operator}~{quad.operand1}~{quad.operand2}~{quad.result}\n")
 
     def generate_arithmetic(self):
         # Check Types
@@ -105,7 +104,6 @@ class QuadrupleManager:
             operand2 = self.pop_operand()
             operand1 = self.pop_operand()
             operator = self.pop_operator()
-            print(operator)
             result = self.generate_temp()
             self.add_quadruple(operator, operand1, operand2, result)
             self.push_operand(result)
@@ -156,9 +154,8 @@ varTable = {
 
 varTempArr = []
 
+
 # Grammar Rules
-
-
 def p_program(p):
     'program : PROGRAM IDENTIFIER LCURLYBRACE vars block RCURLYBRACE'
     p[0] = p[1]
@@ -184,14 +181,9 @@ def p_seenid(p):
 
 def p_seentype(p):
     'seentype : '
-    # agregar a tabla variables
-    # agrego a pila tipos
-    # type = p[-1]
     global varTempArr
     global varTable
     for id in varTempArr:
-        # if p[-1] in ['int', 'real']:
-        #     varTable[id] = ['NUMBER_CONST', None]
         varTable[id] = [p[-1], None]
 
     # TODO
@@ -300,8 +292,6 @@ def p_seenboolfor(_):
 
 def p_seenchangefor(_):
     'seenchangefor : '
-    # TODO
-    # assign value back to variable
     index_gotof = quadrupleMan.pop_jump()
     index_gotov = quadrupleMan.pop_jump()
     index_condition = index_gotov - 1
@@ -313,8 +303,6 @@ def p_seenchangefor(_):
 
 def p_seencurlyfor(_):
     'seencurlyfor : '
-    # index_gotof = quadrupleMan.pop_jump()
-    # quadrupleMan.quadruples[index_gotof].result = quadrupleMan.get_index()
     index_gotof = quadrupleMan.pop_jump()
     index_change = index_gotof + 1
     quadrupleMan.add_quadruple('goto', None, None, index_change)
@@ -334,13 +322,10 @@ def p_assignnow(p):
     'assignnow : '
     # TODO
     # Handle errors where variables arent defined
-    # Assing value into Variable Table
-    # varTable[p[-3]][1] = p[-1]
-    # Push assign into operator stack
+
     identifier = p[-3]
     quadrupleMan.push_operator(':=')
     quadrupleMan.generate_assignment(identifier)
-    print(varTable)
 
 
 def p_expression(p):
@@ -354,11 +339,7 @@ def p_expression(p):
                 | IDENTIFIER PLUSPLUS seenunary
                 | IDENTIFIER MINUSMINUS seenunary
                     '''
-    # if len(p) == 2:
     p[0] = p[1]
-    # quadrupleMan.generate_arithmetic()
-    # elif p[2] == '>':
-    #     p[0] = float(p[1]) > float(p[3])
 
 
 def p_seenunary(p):
@@ -391,15 +372,6 @@ def p_simpleexpressionp(p):
 def p_term(p):
     '''term : factor seenfactor termp'''
 
-    # p[0] = float(p[1]) % float(p[3])
-    # elif p[2] == '++':
-    #     quadrupleMan.push_operator('+')
-    #     p[0] = float(p[1]) + 1
-    # elif p[2] == '--':
-    #     p[0] = float(p[1]) - 1
-    # elif p[2] == 'AND':
-    #     p[0] = float(p[1]) % float(p[3])
-
 
 def p_termp(p):
     '''termp : empty
@@ -414,7 +386,6 @@ def p_termp(p):
 
 def p_seenoperator(p):
     '''seenoperator : '''
-    # push p[-1]
     quadrupleMan.push_operator(p[-1])
 
 
@@ -428,7 +399,6 @@ def p_seenfactor(p):
 
 def p_genquad(_):
     'genquad : '
-    # print('entro genquad')
     quadrupleMan.generate_arithmetic()
 
 
@@ -455,8 +425,6 @@ def p_const(p):
             | NUMBER_CONST
             | STRING_CONST
     '''
-    print('entro const')
-    print(prevToken.type)
     if len(p) == 2:
         if (prevToken.type == 'IDENTIFIER'):
             # Check VarTable to get Type
@@ -468,7 +436,6 @@ def p_const(p):
         else:
             quadrupleMan.push_type(prevToken.type)
             quadrupleMan.push_operand(str(p[1]))
-        # p[0] = p[1]
     elif p[1] == '-':
         if (prevToken.type == 'IDENTIFIER'):
             # Check VarTable to get Type
@@ -500,16 +467,14 @@ def p_const(p):
 def p_writefunction(p):
     '''writefunction : PRINT LPAREN expression RPAREN SEMICOLON
                     | WRITE LPAREN expression RPAREN SEMICOLON'''
-    # print(p[3])
     quadrupleMan.generate_write()
 
 
 def p_empty(p):
     'empty : '
 
+
 # Error rule for syntax errors
-
-
 def p_error(p):
     print("Syntax error in input! Near '%s' line: %s" % (p.value, p.lineno))
 
@@ -517,7 +482,7 @@ def p_error(p):
 input_file_path = "lexerOut.txt"
 input_file = open(input_file_path, "r")
 raw_input = input_file.read().split('~')
-print(raw_input)
+input_file.close()
 
 
 class MyLexer(object):
@@ -537,7 +502,6 @@ class MyLexer(object):
         return_token.value = token_lexeme
         return_token.type = token_type
         return_token.lexpos = 0
-        print(return_token)
         prevToken = currToken
         currToken = return_token
         return return_token
@@ -550,6 +514,10 @@ parser = yacc.yacc()
 
 
 result = parser.parse(lexer=lexy)
-# print(result)
-quadrupleMan.print_stacks()
 quadrupleMan.write_quads()
+
+# Virtual Machine Execution
+i = 0
+while i < len(quadrupleMan.quadruples):
+    print(quadrupleMan.quadruples[i])
+    i += 1
