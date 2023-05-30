@@ -115,6 +115,7 @@ class QuadrupleManager:
                 self.push_type('BOOLEAN')
             else:
                 self.push_type(type1)
+                print('pushed type', type1)
         else:
             print('Error, type mismatch')
             return False
@@ -127,6 +128,7 @@ class QuadrupleManager:
 
         # Check if identifier has the same type as the expression
         type1 = self.pop_type()
+        print('type1', type1)
         type2 = varTable[identifier][0]
         if type1 in opTypeTable[type2]:
             operator = self.pop_operator()
@@ -147,6 +149,14 @@ class QuadrupleManager:
         if type == 'BOOLEAN':
             return True
         print('Error, boolean expression expected')
+        return False
+
+    def check_num(self):
+        print(len(self.types))
+        type = self.pop_type()
+        if type == 'NUMBER_CONST':
+            return True
+        print('Error, numeric expression expected')
         return False
 
     def get_index(self):
@@ -232,10 +242,10 @@ def p_statement(_):
                 | while statement
                 | for
                 | for statement
-                | IDENTIFIER PLUSPLUS seenunary SEMICOLON
-                | IDENTIFIER MINUSMINUS seenunary SEMICOLON
-                | IDENTIFIER PLUSPLUS seenunary SEMICOLON statement
-                | IDENTIFIER MINUSMINUS seenunary SEMICOLON statement'''
+                | IDENTIFIER PLUSPLUS seenunary checknum SEMICOLON
+                | IDENTIFIER MINUSMINUS seenunary checknum SEMICOLON
+                | IDENTIFIER PLUSPLUS seenunary checknum SEMICOLON statement
+                | IDENTIFIER MINUSMINUS seenunary checknum SEMICOLON statement'''
 
 
 def p_condition(p):
@@ -247,6 +257,12 @@ def p_condition(p):
 def p_checkbool(p):
     'checkbool : '
     if not quadrupleMan.check_bool():
+        p_error(p)
+
+
+def p_checknum(p):
+    'checknum : '
+    if not quadrupleMan.check_num():
         p_error(p)
 
 
@@ -294,7 +310,7 @@ def p_seencurlywhile(_):
 
 def p_for(_):
     '''for : FOR LPAREN assign expression checkbool seenboolfor SEMICOLON expression seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor
-            | FOR LPAREN assign expression checkbool seenboolfor SEMICOLON assignfor seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor'''
+            | FOR LPAREN assign expression checkbool seenboolfor SEMICOLON assignfor checknum seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor'''
 
 
 def p_seenboolfor(_):
@@ -331,12 +347,25 @@ def p_assign(_):
 
 
 def p_assignfor(_):
-    'assignfor : IDENTIFIER ASSIGNOP expression assignnow'
+    'assignfor : IDENTIFIER ASSIGNOP expression pushtype assignnowfor'
+
+
+def p_pushtype(_):
+    'pushtype : '
+    print('pushtype grammar', quadrupleMan.types[-1])
+    quadrupleMan.push_type(quadrupleMan.types[-1])
 
 
 def p_assignnow(p):
     'assignnow : '
     identifier = p[-3]
+    quadrupleMan.push_operator(':=')
+    quadrupleMan.generate_assignment(identifier)
+
+
+def p_assignnowfor(p):
+    'assignnowfor : '
+    identifier = p[-4]
     quadrupleMan.push_operator(':=')
     quadrupleMan.generate_assignment(identifier)
 
@@ -349,8 +378,8 @@ def p_expression(p):
                 | simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
                 | simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
                 | simpleexpression EQUALS seenoperator simpleexpression genquad
-                | IDENTIFIER PLUSPLUS seenunary
-                | IDENTIFIER MINUSMINUS seenunary
+                | IDENTIFIER PLUSPLUS seenunary checknum
+                | IDENTIFIER MINUSMINUS seenunary checknum
                     '''
     p[0] = p[1]
 
@@ -358,6 +387,7 @@ def p_expression(p):
 def p_seenunary(p):
     'seenunary : '
     quadrupleMan.add_quadruple(p[-1], p[-2], 1, p[-2])
+    quadrupleMan.push_type('NUMBER_CONST')
 
 
 def p_simpleexpression(p):
