@@ -115,6 +115,7 @@ def t_NUMBER_CONST(t):
 
 # String constants
 def t_STRING_CONST(t):
+    # add support for spaces in strings
     r'\"([^\\\n]|(\\.))*?\"'
     t.value = t.value[1:-1]  # Remove the quotes from the string
     return t
@@ -151,8 +152,8 @@ while True:
     tok = lexer.token()
     if not tok:
         break  # No more input
-    output_file.write(str(tok.value) + ' ')
-    output_file.write(str(tok.lineno) + ' ')
-    output_file.write(str(tok.type) + ' ')
+    output_file.write(str(tok.value) + '~')
+    output_file.write(str(tok.lineno) + '~')
+    output_file.write(str(tok.type) + '~')
 
 output_file.close()

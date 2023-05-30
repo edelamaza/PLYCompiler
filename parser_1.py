@@ -2,10 +2,18 @@ import ply.yacc as yacc
 import ply.lex as lex
 from lexer import tokens
 
-# PIla operandos, pila opradores, pila tipos, pila saltos
-
+# Global Variables
 currToken = ''
 prevToken = ''
+
+# Operations Type Table
+opTypeTable = {
+    'NUMBER_CONST': ['NUMBER_CONST', 'int', 'real'],
+    'STRING_CONST': ['STRING_CONST'],
+    'BOOLEAN': ['BOOLEAN'],
+    'int': ['int', 'real', 'NUMBER_CONST'],
+    'real': ['real', 'NUMBER_CONST', 'int'],
+}
 
 
 class Quadruple:
@@ -51,6 +59,7 @@ class QuadrupleManager:
 
     def push_type(self, data_type):
         self.types.append(data_type)
+        print('Pushed type: ', data_type, 'to stack')
 
     def pop_type(self):
         if self.types:
@@ -81,12 +90,18 @@ class QuadrupleManager:
         for quad in self.quadruples:
             quad.print()
 
+    def write_quads(self):
+        with open('quadruples.txt', 'w') as f:
+            for quad in self.quadruples:
+                f.write(
+                    f"{quad.index} {quad.operator} {quad.operand1} {quad.operand2} {quad.result}\n")
+
     def generate_arithmetic(self):
         # Check Types
         type1 = self.pop_type()
         type2 = self.pop_type()
 
-        if (type1 == type2 and len(self.operators) != 0):
+        if (type2 in opTypeTable[type1] and len(self.operators) != 0):
             operand2 = self.pop_operand()
             operand1 = self.pop_operand()
             operator = self.pop_operator()
@@ -98,6 +113,9 @@ class QuadrupleManager:
                 self.push_type('BOOLEAN')
             else:
                 self.push_type(type1)
+        else:
+            print('Error, type mismatch')
+            return False
 
     def generate_assignment(self, identifier):
         operator = self.pop_operator()
@@ -172,8 +190,9 @@ def p_seentype(p):
     global varTempArr
     global varTable
     for id in varTempArr:
-        if p[-1] in ['int', 'real']:
-            varTable[id] = ['NUMBER_CONST', None]
+        # if p[-1] in ['int', 'real']:
+        #     varTable[id] = ['NUMBER_CONST', None]
+        varTable[id] = [p[-1], None]
 
     # TODO
     # Error handling for duplicate variables
@@ -206,7 +225,9 @@ def p_statement(_):
                 | while
                 | while statement
                 | for
-                | for statement'''
+                | for statement
+                | IDENTIFIER PLUSPLUS seenunary SEMICOLON
+                | IDENTIFIER MINUSMINUS seenunary SEMICOLON'''
 
 
 def p_condition(p):
@@ -264,7 +285,8 @@ def p_seencurlywhile(_):
 
 
 def p_for(_):
-    'for : FOR LPAREN assign expression checkbool seenboolfor SEMICOLON expression assignnow seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor'
+    '''for : FOR LPAREN assign expression checkbool seenboolfor SEMICOLON expression seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor
+            | FOR LPAREN assign expression checkbool seenboolfor SEMICOLON assignfor seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor'''
 
 
 def p_seenboolfor(_):
@@ -304,6 +326,10 @@ def p_assign(_):
     'assign : IDENTIFIER ASSIGNOP expression assignnow SEMICOLON'
 
 
+def p_assignfor(_):
+    'assignfor : IDENTIFIER ASSIGNOP expression assignnow'
+
+
 def p_assignnow(p):
     'assignnow : '
     # TODO
@@ -325,6 +351,8 @@ def p_expression(p):
                 | simpleexpression GREATER_THAN_EQUALS seenoperator simpleexpression genquad
                 | simpleexpression NOT_EQUALS seenoperator simpleexpression genquad
                 | simpleexpression EQUALS seenoperator simpleexpression genquad
+                | IDENTIFIER PLUSPLUS seenunary
+                | IDENTIFIER MINUSMINUS seenunary
                     '''
     # if len(p) == 2:
     p[0] = p[1]
@@ -333,21 +361,13 @@ def p_expression(p):
     #     p[0] = float(p[1]) > float(p[3])
 
 
+def p_seenunary(p):
+    'seenunary : '
+    quadrupleMan.add_quadruple(p[-1], p[-2], 1, p[-2])
+
+
 def p_simpleexpression(p):
     '''simpleexpression : term seenterm simpleexpressionp'''
-    if len(p) == 2:
-        p[0] = p[1]
-    elif p[2] == '+':
-        quadrupleMan.push_operator('+')
-        quadrupleMan.generate_arithmetic()
-        # p[0] = float(p[1]) + float(p[3])
-    elif p[2] == '-':
-        quadrupleMan.push_operator('-')
-        quadrupleMan.generate_arithmetic()
-
-        # p[0] = float(p[1]) - float(p[3])
-    # elif p[2] == 'or':
-    #     p[0] = float(p[1]) / float(p[3])
 
 
 def p_seenterm(_):
@@ -496,7 +516,7 @@ def p_error(p):
 
 input_file_path = "lexerOut.txt"
 input_file = open(input_file_path, "r")
-raw_input = input_file.read().split()
+raw_input = input_file.read().split('~')
 print(raw_input)
 
 
@@ -506,7 +526,7 @@ class MyLexer(object):
         global currToken
         global prevToken
 
-        if len(raw_input) == 0:
+        if len(raw_input) == 1:
             return None
 
         token_lexeme = raw_input.pop(0)
@@ -532,3 +552,4 @@ parser = yacc.yacc()
 result = parser.parse(lexer=lexy)
 # print(result)
 quadrupleMan.print_stacks()
+quadrupleMan.write_quads()

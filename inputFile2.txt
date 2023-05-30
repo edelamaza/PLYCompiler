@@ -1,12 +1,13 @@
-program main { 
-	var i,n,f,x : int;
-    begin;
-	write("texto");
-	f := 5;
-	for (x := 0; x < f; x+2/3+1)
-	{
+program main{
+var i,n,f,x : int;
+var a,b,c : boolean;
+begin;
+write("texto dump");
+f := 5;
+for (x :=0 ; x>n ; x++)
+{
 		n := x + f;
-	}
-	write(n);
-    end;
+}
+write(n);
+end;
 }
