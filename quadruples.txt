@@ -1,12 +1,15 @@
 0~write~texto dump~None~None
 1~:=~5.0~None~f
-2~:=~0.0~None~x
-3~>~x~n~t0
-4~gotov~t0~None~8
-5~gotof~t0~None~11
-6~++~x~1~x
-7~goto~None~None~3
-8~+~x~f~t1
-9~:=~t1~None~n
-10~goto~None~None~6
-11~write~n~None~None
+2~:=~+hello~None~a
+3~:=~1.0~None~x
+4~<~x~f~t0
+5~gotov~t0~None~10
+6~gotof~t0~None~14
+7~*~x~3.0~t1
+8~:=~t1~None~x
+9~goto~None~None~4
+10~+~x~f~t2
+11~:=~t2~None~n
+12~write~for~None~None
+13~goto~None~None~7
+14~write~n~None~None

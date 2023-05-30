@@ -1,15 +1,15 @@
 program main{
 var i,n,f,x : int;
+var a: string;
 begin;
 write("texto dump");
-f := 1;
-x := -3;
-if( x > f) then 
+f := 5;
+a := "hello";
+for (x :=1 ; x>f ; x:= x*3)
 {
 	n := x + f;
-}else{
-	n := x - 4;
+	print("for");
 }
 write(n);
-	end;
+end;
 }

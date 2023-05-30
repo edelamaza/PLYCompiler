@@ -120,11 +120,22 @@ class QuadrupleManager:
             return False
 
     def generate_assignment(self, identifier):
-        operator = self.pop_operator()
-        operand1 = self.pop_operand()
-        result = identifier
-        self.add_quadruple(operator, operand1, None, result)
-        self.pop_type()
+        # Check to see if identifier is in the variable table
+        if identifier not in varTable:
+            print('Error: Variable {} not defined'.format(identifier))
+            p_error('p')
+
+        # Check if identifier has the same type as the expression
+        type1 = self.pop_type()
+        type2 = varTable[identifier][0]
+        if type1 in opTypeTable[type2]:
+            operator = self.pop_operator()
+            operand1 = self.pop_operand()
+            result = identifier
+            self.add_quadruple(operator, operand1, None, result)
+        else:
+            print('Error, type mismatch')
+            p_error('p')
 
     def generate_write(self):
         operand = self.pop_operand()
@@ -180,17 +191,18 @@ def p_seentype(p):
     'seentype : '
     global varTempArr
     global varTable
+
     for id in varTempArr:
+        # Check to see if the variable is already in the table
+        if id in varTable:
+            print('Error, duplicate variable')
+            p_error(p)
         if p[-1] in ['int', 'real']:
             varTable[id] = ['NUMBER_CONST', 0]
         elif p[-1] in ['boolean']:
             varTable[id] = ['BOOLEAN', None]
         elif p[-1] in ['string']:
             varTable[id] = ['STRING_CONST', None]
-
-    # TODO
-    # Error handling for duplicate variables
-    # id = p[-3] si ya esta es error (duplicate)
 
     # Reset var arraytemp
     varTempArr = []
@@ -324,9 +336,6 @@ def p_assignfor(_):
 
 def p_assignnow(p):
     'assignnow : '
-    # TODO
-    # Handle errors where variables arent defined
-
     identifier = p[-3]
     quadrupleMan.push_operator(':=')
     quadrupleMan.generate_assignment(identifier)
@@ -448,9 +457,9 @@ def p_const(p):
             quadrupleMan.push_operand(-float(p[2]))
             # p[0] = -float(p[2])
         else:
-            # TODO
             # Strings with negative sign
-            print('error string cannot be negative')
+            print('Error string cannot be negative')
+            p_error(p)
     else:
         if (prevToken.type == 'IDENTIFIER'):
             # Check VarTable to get Type
@@ -462,7 +471,8 @@ def p_const(p):
         else:
             # TODO
             # Strings with positive sign
-            print('error string cannot be positive')
+            print('Error string cannot be positive')
+            p_error(p)
 
 
 def p_writefunction(p):
@@ -515,7 +525,7 @@ parser = yacc.yacc()
 
 
 result = parser.parse(lexer=lexy)
-# quadrupleMan.write_quads()
+quadrupleMan.write_quads()
 quadrupleMan.print_stacks()
 
 
