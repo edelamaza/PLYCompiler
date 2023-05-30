@@ -523,6 +523,8 @@ parser = yacc.yacc()
 result = parser.parse(lexer=lexy)
 quadrupleMan.write_quads()
 quadrupleMan.print_stacks()
+print('----------------------')
+print('Program Output:')
 
 
 # # Virtual Machine Execution
@@ -592,4 +594,6 @@ while i < len(quadrupleMan.quadruples):
 
     i += 1
 
+print('----------------------')
+print('Variable Table:')
 print(varTable)

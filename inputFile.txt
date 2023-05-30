@@ -4,7 +4,7 @@ begin;
 write("texto dump");
 f := 5;
 a := 4 MOD 3;
-for (x :=1 ; x>f ; x:= x*3)
+for (x :=1 ; x<f ; x:= x*3)
 {
 	n := x + f;
 	print("for");

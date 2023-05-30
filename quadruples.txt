@@ -3,7 +3,7 @@
 2~MOD~4.0~3.0~t0
 3~:=~t0~None~a
 4~:=~1.0~None~x
-5~>~x~f~t1
+5~<~x~f~t1
 6~gotov~t1~None~11
 7~gotof~t1~None~15
 8~*~x~3.0~t2
