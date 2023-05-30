@@ -1,12 +1,12 @@
 program main { 
-    var z : real; 
+	var i,n,f,x : int;
     begin;
-    while (3 > 1) do 
-    {
-        write("while");
-    }
-	if ( 4 < 5) then {
-		write("if");
+	write("texto");
+	f := 5;
+	for (x := 0; x < f; x+2/3+1)
+	{
+		n := x + f;
 	}
+	write(n);
     end;
 }

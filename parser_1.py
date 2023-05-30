@@ -195,19 +195,6 @@ def p_block(_):
     'block : BEGIN SEMICOLON statement END SEMICOLON'
 
 
-# def p_statement(p):
-#     '''statement : empty
-#                 | assign
-#                 | condition
-#                 | for
-#                 | while
-#                 | write
-#                 | assign statement
-#                 | condition statement
-#                 | for statement
-#                 | while statement
-#                 | write statement'''
-
 def p_statement(_):
     '''statement : empty
                 | assign
@@ -217,7 +204,9 @@ def p_statement(_):
                 | condition
                 | condition statement
                 | while
-                | while statement'''
+                | while statement
+                | for
+                | for statement'''
 
 
 def p_condition(p):
@@ -253,13 +242,13 @@ def p_seencurlyelse(_):
     quadrupleMan.quadruples[index_goto].result = quadrupleMan.get_index()
 
 
-def p_while(p):
+def p_while(_):
     'while : WHILE LPAREN expression RPAREN checkbool seenwhile DO LCURLYBRACE statement RCURLYBRACE seencurlywhile '
 
 
 def p_seenwhile(_):
     'seenwhile : '
-    index = quadrupleMan.get_index()
+    index = quadrupleMan.get_index() - 1
     quadrupleMan.push_jump(index)
     result = quadrupleMan.pop_operand()
     index_gotof = quadrupleMan.add_quadruple('gotof', result, None, None)
@@ -272,6 +261,43 @@ def p_seencurlywhile(_):
     index_goto = quadrupleMan.pop_jump()
     quadrupleMan.add_quadruple('goto', index_goto, None, None)
     quadrupleMan.quadruples[index_gotof].result = quadrupleMan.get_index()
+
+
+def p_for(_):
+    'for : FOR LPAREN assign expression checkbool seenboolfor SEMICOLON expression assignnow seenchangefor RPAREN LCURLYBRACE statement RCURLYBRACE seencurlyfor'
+
+
+def p_seenboolfor(_):
+    'seenboolfor : '
+    result = quadrupleMan.pop_operand()
+    index_gotov = quadrupleMan.add_quadruple('gotov', result, None, None)
+    quadrupleMan.push_jump(index_gotov)
+    index_gotof = quadrupleMan.add_quadruple('gotof', result, None, None)
+    quadrupleMan.push_jump(index_gotof)
+
+
+def p_seenchangefor(_):
+    'seenchangefor : '
+    # TODO
+    # assign value back to variable
+    index_gotof = quadrupleMan.pop_jump()
+    index_gotov = quadrupleMan.pop_jump()
+    index_condition = index_gotov - 1
+    quadrupleMan.add_quadruple('goto', None, None, index_condition)
+    index = quadrupleMan.get_index()
+    quadrupleMan.quadruples[index_gotov].result = index
+    quadrupleMan.push_jump(index_gotof)
+
+
+def p_seencurlyfor(_):
+    'seencurlyfor : '
+    # index_gotof = quadrupleMan.pop_jump()
+    # quadrupleMan.quadruples[index_gotof].result = quadrupleMan.get_index()
+    index_gotof = quadrupleMan.pop_jump()
+    index_change = index_gotof + 1
+    quadrupleMan.add_quadruple('goto', None, None, index_change)
+    index = quadrupleMan.get_index()
+    quadrupleMan.quadruples[index_gotof].result = index
 
 
 def p_assign(_):
