@@ -115,7 +115,6 @@ class QuadrupleManager:
                 self.push_type('BOOLEAN')
             else:
                 self.push_type(type1)
-                print('pushed type', type1)
         else:
             print('Error, type mismatch')
             return False
@@ -128,7 +127,6 @@ class QuadrupleManager:
 
         # Check if identifier has the same type as the expression
         type1 = self.pop_type()
-        print('type1', type1)
         type2 = varTable[identifier][0]
         if type1 in opTypeTable[type2]:
             operator = self.pop_operator()
@@ -152,7 +150,6 @@ class QuadrupleManager:
         return False
 
     def check_num(self):
-        print(len(self.types))
         type = self.pop_type()
         if type == 'NUMBER_CONST':
             return True
@@ -352,7 +349,6 @@ def p_assignfor(_):
 
 def p_pushtype(_):
     'pushtype : '
-    print('pushtype grammar', quadrupleMan.types[-1])
     quadrupleMan.push_type(quadrupleMan.types[-1])
 
 
